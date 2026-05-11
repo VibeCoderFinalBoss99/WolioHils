@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { motion, useScroll, useTransform } from "motion/react";
 import { Star, Shield, Clock, Headphones, Bed, Users, MapPin, ArrowRight, Quote } from "lucide-react";
 import { TESTIMONIALS } from "../data/properties";
@@ -122,7 +122,7 @@ export default function HomePage({ startBooking }: HomePageProps) {
               whileHover={{ scale: 1.05, y: -2, boxShadow: '0 25px 60px rgba(201,168,76,0.4)' }} 
               whileTap={{ scale: 0.95 }} 
               onClick={() => startBooking()} 
-              className="bg-accent hover:bg-accent-light text-primary font-bold text-sm tracking-wider uppercase px-10 py-4 rounded-full shadow-[0_20px_50px_rgba(201,168,76,0.35)] flex items-center gap-3 transition-all duration-300 cursor-pointer"
+              className="bg-accent hover:bg-accent-light text-primary font-bold text-sm tracking-wider uppercase px-10 py-4 rounded-full shadow-lg flex items-center gap-3 transition-all duration-300 cursor-pointer"
               style={{ backdropFilter: 'blur(10px)' }}
             >
               Booking Sekarang <ArrowRight className="w-4 h-4" />
@@ -169,7 +169,7 @@ export default function HomePage({ startBooking }: HomePageProps) {
                 className="group"
               >
                 <div className="text-4xl md:text-5xl font-black text-primary mb-2 group-hover:text-accent transition-colors duration-300">1</div>
-                <p className="text-primary/80 text-sm font-medium group-hover:text-primary transition-colors duration-300">Properti Eksklusif</p>
+                <p className="text-primary/80 text-sm font-medium group-hover:text-primary transition-colors duration-300">Pengalaman Terbaik</p>
               </motion.div>
               <motion.div 
                 whileHover={{ scale: 1.05, y: -5 }}

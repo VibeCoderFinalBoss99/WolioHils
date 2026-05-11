@@ -85,7 +85,7 @@ export default function AboutPage({ navigate }: AboutPageProps) {
               <p>Tim ahli perjalanan kami secara personal mengunjungi dan memverifikasi setiap properti, memastikan memenuhi standar ketat kami untuk kenyamanan, desain, dan layanan. Kami tidak hanya mencantumkan properti — kami mengkurasi pengalaman.</p>
               <p>Dari Pegunungan Alpen yang bersalju hingga surga pulau tropis, setiap properti Wolio Hills menceritakan kisah unik. Kami mengundang Anda untuk menjadi bagian dari kisah kami.</p>
             </div>
-            <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} onClick={() => navigate("properties")} className="mt-8 bg-primary hover:bg-primary-light text-white font-bold text-sm tracking-wider uppercase px-8 py-3.5 rounded-full shadow-lg cursor-pointer transition-colors">
+            <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} onClick={() => navigate("home")} className="mt-8 bg-primary hover:bg-primary-light text-white font-bold text-sm tracking-wider uppercase px-8 py-3.5 rounded-full shadow-lg cursor-pointer transition-colors">
               Jelajahi Properti
             </motion.button>
           </motion.div>
