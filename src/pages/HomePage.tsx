@@ -487,17 +487,18 @@ export default function HomePage({ navigate, startBooking }: HomePageProps) {
             <h2 className="font-display font-black text-primary text-4xl md:text-5xl mt-3">Cara <span className="text-gradient">Pesan</span></h2>
             <p className="text-text-light text-lg mt-4 max-w-2xl mx-auto">Dalam 3 langkah mudah, kamu bisa booking properti impian kamu di Wolio Hills Malino.</p>
           </motion.div>
-          <div className="hidden md:block absolute top-16 left-[20%] right-[20%] h-[2px] bg-gradient-to-r from-accent/0 via-accent/30 to-accent/0" />
-          {[{ step: "01", title: "Jelajahi", desc: "Telusuri koleksi premium properti pilihan kami." }, { step: "02", title: "Pesan", desc: "Isi detail Anda dan amankan menginap Anda secara instan." }, { step: "03", title: "Nikmati", desc: "Tiba dan nikmati pengalaman mewah melampaui ekspektasi." }].map((item, i) => (
-            <motion.div key={item.step} initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.15 }} viewport={{ once: true }} className="text-center relative">
-              <motion.div whileHover={{ scale: 1.1, rotate: 5 }} className="w-20 h-20 rounded-2xl bg-primary mx-auto mb-6 flex items-center justify-center shadow-deep relative z-10">
-                <span className="font-display font-bold text-accent text-xl">{item.step}</span>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {[{ step: "01", title: "Jelajahi", desc: "Telusuri koleksi premium properti pilihan kami." }, { step: "02", title: "Pesan", desc: "Isi detail Anda dan amankan menginap Anda secara instan." }, { step: "03", title: "Nikmati", desc: "Tiba dan nikmati pengalaman mewah melampaui ekspektasi." }].map((item, i) => (
+              <motion.div key={item.step} initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.15 }} viewport={{ once: true }} className="text-center relative">
+                <motion.div whileHover={{ scale: 1.1, rotate: 5 }} className="w-20 h-20 rounded-2xl bg-primary mx-auto mb-6 flex items-center justify-center shadow-deep relative z-10">
+                  <span className="font-display font-bold text-accent text-xl">{item.step}</span>
+                </motion.div>
+                <h4 className="font-display font-bold text-primary text-xl mb-2">{item.title}</h4>
+                <p className="text-text-light text-sm leading-relaxed max-w-xs mx-auto">{item.desc}</p>
               </motion.div>
-              <h4 className="font-display font-bold text-primary text-xl mb-2">{item.title}</h4>
-              <p className="text-text-light text-sm leading-relaxed max-w-xs mx-auto">{item.desc}</p>
-            </motion.div>
-          ))}
-        </div>
+            ))}
+          </div>
+        </motion.div>
       </section>
 
       {/* TESTIMONIALS */}
