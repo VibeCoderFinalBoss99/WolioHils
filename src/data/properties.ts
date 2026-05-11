@@ -188,7 +188,7 @@ export const TESTIMONIALS = [
     role: "Travel Blogger",
     avatar: "SM",
     rating: 5,
-    text: "LuxeStay transformed our anniversary trip into an unforgettable experience. The Ocean Pearl Villa in Bali was even more stunning than the photos. Impeccable service!",
+    text: "Wolio Hills transformed our anniversary trip into an unforgettable experience. The Ocean Pearl Villa in Bali was even more stunning than the photos. Impeccable service!",
   },
   {
     id: 2,
@@ -196,7 +196,7 @@ export const TESTIMONIALS = [
     role: "Business Executive",
     avatar: "JR",
     rating: 5,
-    text: "As someone who travels frequently for work, LuxeStay has become my go-to. The booking process is seamless, and every property exceeds expectations. Highly recommended.",
+    text: "As someone who travels frequently for work, Wolio Hills has become my go-to. The booking process is seamless, and every property exceeds expectations. Highly recommended.",
   },
   {
     id: 3,
@@ -204,7 +204,7 @@ export const TESTIMONIALS = [
     role: "Interior Designer",
     avatar: "EC",
     rating: 5,
-    text: "The attention to detail in each property is remarkable. From the curated furnishings to the thoughtful amenities, LuxeStay truly understands luxury living.",
+    text: "The attention to detail in each property is remarkable. From the curated furnishings to the thoughtful amenities, Wolio Hills truly understands luxury living.",
   },
   {
     id: 4,
@@ -212,6 +212,6 @@ export const TESTIMONIALS = [
     role: "Photographer",
     avatar: "MB",
     rating: 5,
-    text: "I've stayed at dozens of luxury properties worldwide, and LuxeStay consistently delivers the most photogenic and comfortable accommodations. Pure excellence.",
+    text: "I've stayed at dozens of luxury properties worldwide, and Wolio Hills consistently delivers the most photogenic and comfortable accommodations. Pure excellence.",
   },
 ];

@@ -58,7 +58,7 @@ export default function ContactPage({}: Props) {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <ContactCard icon={MapPin} title="Alamat" value="123 Luxury Avenue, Makassar, Indonesia" delay={0} />
           <ContactCard icon={Phone} title="Telepon" value="+62 812-3456-7890" delay={0.1} />
-          <ContactCard icon={Mail} title="Email" value="hello@luxestay.com" delay={0.2} />
+          <ContactCard icon={Mail} title="Email" value="hello@woliohills.com" delay={0.2} />
           <ContactCard icon={Clock} title="Jam Operasional" value="Support 24/7 Tersedia" delay={0.3} />
         </div>
       </section>
@@ -115,7 +115,7 @@ export default function ContactPage({}: Props) {
           <motion.div initial={{ opacity: 0, x: 30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} className="relative">
             <div className="w-full h-full min-h-[400px] rounded-3xl overflow-hidden shadow-deep gold-border relative">
               <iframe
-                title="LuxeStay Location"
+                title="Wolio Hills Location"
                 src="https://maps.google.com/maps?q=Makassar+Indonesia&t=&z=13&ie=UTF8&iwloc=&output=embed"
                 width="100%"
                 height="100%"
@@ -126,7 +126,7 @@ export default function ContactPage({}: Props) {
               />
               <div className="absolute bottom-6 left-6 z-10 hidden md:block">
                 <div className="bg-white p-5 rounded-2xl shadow-xl gold-border max-w-[220px]">
-                  <h4 className="font-display font-bold text-primary text-sm mb-1">Kantor LuxeStay</h4>
+                  <h4 className="font-display font-bold text-primary text-sm mb-1">Kantor Wolio Hills</h4>
                   <p className="text-text-light text-[10px] leading-relaxed">123 Luxury Avenue,<br />Makassar, Indonesia</p>
                 </div>
               </div>

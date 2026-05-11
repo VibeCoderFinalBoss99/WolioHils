@@ -27,7 +27,7 @@ export default function Footer({ navigate }: FooterProps) {
               </div>
               <div>
                 <h3 className="font-display font-bold text-xl text-white">Wolio Hills</h3>
-                <p className="text-[9px] font-semibold text-accent tracking-[0.3em] uppercase">Premium Malino</p>
+                <p className="text-[9px] font-bold text-white tracking-[0.3em] uppercase">Malino</p>
               </div>
             </div>
             <p className="text-white/50 text-sm leading-relaxed">
@@ -110,7 +110,7 @@ export default function Footer({ navigate }: FooterProps) {
               {[
                 { icon: MapPin, text: "Jl. Luxury No. 123, Makassar, Indonesia" },
                 { icon: Phone, text: "+62 812-3456-7890" },
-                { icon: Mail, text: "halo@luxestay.com" },
+                { icon: Mail, text: "halo@woliohills.com" },
               ].map(({ icon: Icon, text }, i) => (
                 <div key={i} className="flex items-start gap-3 group">
                   <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center shrink-0 group-hover:bg-accent/20 transition-colors">

@@ -77,21 +77,23 @@ export default function HomePage({ startBooking }: HomePageProps) {
       {/* HERO */}
       <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
         {/* Full-size background image */}
-        <div className="absolute inset-0">
+        <div className="absolute inset-0 w-full h-full">
           <img 
             src="https://images.unsplash.com/photo-1582268611958-ebfd161ef9cf?w=1920&q=80" 
             alt="Luxury villa with pool" 
-            className="w-full h-full object-cover"
+            className="w-full h-full object-cover object-center"
+            style={{ 
+              width: '100vw',
+              height: '100vh',
+              objectFit: 'cover'
+            }}
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/10 to-black/30" />
+          <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/50 to-black/70" />
         </div>
         <motion.div animate={{ scale: [1, 1.2, 1], x: [0, 30, 0] }} transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }} className="absolute top-1/4 left-1/4 w-[500px] h-[500px] bg-accent/10 rounded-full blur-[120px]" />
         <motion.div animate={{ scale: [1.2, 1, 1.2], x: [0, -40, 0] }} transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }} className="absolute bottom-1/4 right-1/4 w-[600px] h-[600px] bg-primary-light/30 rounded-full blur-[150px]" />
 
         <div className="relative z-10 text-center max-w-5xl mx-auto px-6 pt-32 pb-20">
-          <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/15 text-white px-5 py-2 rounded-full mb-8">
-            <span className="w-2 h-2 rounded-full bg-accent animate-pulse" /><span className="text-xs font-semibold tracking-widest uppercase">Premium Malino</span>
-          </motion.div>
           <motion.h1 
             initial={{ opacity: 0, y: 30 }} 
             animate={{ opacity: 1, y: 0 }} 
@@ -128,7 +130,7 @@ export default function HomePage({ startBooking }: HomePageProps) {
           </motion.div>
         </div>
 
-        <div className="absolute bottom-0 left-0 w-full"><svg viewBox="0 0 1440 120" fill="none" className="w-full"><path d="M0,80 C360,120 1080,40 1440,80 L1440,120 L0,120 Z" fill="var(--color-surface)" /></svg></div>
+        <div className="absolute -bottom-10 left-0 w-full"><svg viewBox="0 0 1440 60" fill="none" className="w-full h-15"><path d="M0,40 C360,60 1080,20 1440,40 L1440,60 L0,60 Z" fill="var(--color-surface)" /></svg></div>
       </section>
 
       {/* STATS SECTION */}
@@ -342,9 +344,9 @@ export default function HomePage({ startBooking }: HomePageProps) {
           className="max-w-7xl mx-auto relative z-10"
         >
           <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center mb-16">
-            <span className="text-accent font-semibold text-xs uppercase tracking-[0.3em]">Properti Tunggal</span>
+            <span className="text-accent font-semibold text-xs uppercase tracking-[0.3em]">Destinasi Eksklusif</span>
             <h2 className="font-display font-black text-white text-4xl md:text-5xl mt-3">Wolio Hills <span className="text-gradient">Malino</span></h2>
-            <p className="text-white/60 text-lg mt-4 max-w-2xl mx-auto">Satu-satunya properti premium di Malino dengan pemandangan epic, fasilitas lengkap, dan privasi maksimal buat liburan keluarga atau staycation bareng temen-temen.</p>
+            <p className="text-white/60 text-lg mt-4 max-w-2xl mx-auto">Destinasi premium di Malino dengan pemandangan alam yang memukau, fasilitas lengkap, dan privasi maksimal. Sempurna untuk liburan keluarga, gathering bareng teman, atau staycation yang menyegarkan pikiran.</p>
           </motion.div>
           
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
@@ -365,8 +367,8 @@ export default function HomePage({ startBooking }: HomePageProps) {
             
             <motion.div initial={{ opacity: 0, x: 30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} className="space-y-6">
               <div>
-                <h3 className="font-display font-bold text-2xl text-white mb-3">3 Kamar Premium</h3>
-                <p className="text-white/70 leading-relaxed">Private pool, garden luas, fully furnished, kitchen lengkap, sama view pegunungan yang bikin betah. Perfect buat:</p>
+                <h3 className="font-display font-bold text-2xl text-white mb-3">Akomodasi Premium</h3>
+                <p className="text-white/70 leading-relaxed">Akomodasi eksklusif dengan desain modern, fasilitas lengkap, dan pemandangan alam yang memukau. Perfect buat liburan keluarga, gathering bareng teman, atau staycation yang menyegarkan pikiran.</p>
               </div>
               
               <div className="grid grid-cols-2 gap-4">
@@ -375,16 +377,16 @@ export default function HomePage({ startBooking }: HomePageProps) {
                   className="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20"
                 >
                   <Bed className="w-5 h-5 text-accent mb-2" />
-                  <h4 className="text-white font-semibold text-sm mb-1">3 Kamar Tidur</h4>
-                  <p className="text-white/60 text-xs">Cap 10-15 orang</p>
+                  <h4 className="text-white font-semibold text-sm mb-1">Kamar Tidur</h4>
+                  <p className="text-white/60 text-xs">Kapasitas hingga 15 orang</p>
                 </motion.div>
                 <motion.div 
                   whileHover={{ scale: 1.05, y: -5 }}
                   className="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20"
                 >
                   <Users className="w-5 h-5 text-accent mb-2" />
-                  <h4 className="text-white font-semibold text-sm mb-1">Private Pool</h4>
-                  <p className="text-white/60 text-xs">Dengan garden view</p>
+                  <h4 className="text-white font-semibold text-sm mb-1">View Eksklusif</h4>
+                  <p className="text-white/60 text-xs">Pemandangan alam memukau</p>
                 </motion.div>
                 <motion.div 
                   whileHover={{ scale: 1.05, y: -5 }}
@@ -471,8 +473,8 @@ export default function HomePage({ startBooking }: HomePageProps) {
         <motion.div animate={{ scale: [1, 1.15, 1] }} transition={{ duration: 10, repeat: Infinity }} className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-accent/5 rounded-full blur-[150px]" />
         <div className="max-w-3xl mx-auto text-center relative z-10">
           <motion.h2 initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="font-display font-black text-white text-4xl md:text-6xl mb-6">Siap Merasakan <span className="text-gradient">Kemewahan?</span></motion.h2>
-          <motion.p initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} className="text-white/50 text-lg mb-10 max-w-lg mx-auto">Mulai perjalanan Anda hari ini dan temukan mengapa ribuan orang memilih LuxeStay.</motion.p>
-          <motion.button initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} whileHover={{ scale: 1.05, y: -3 }} whileTap={{ scale: 0.95 }} onClick={() => startBooking()} className="bg-accent hover:bg-accent-light text-primary font-bold text-sm tracking-wider uppercase px-12 py-5 rounded-full shadow-[0_20px_50px_rgba(201,168,76,0.35)] cursor-pointer transition-colors">Mulai Pesan Sekarang</motion.button>
+          <motion.p initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} className="text-white/50 text-lg mb-10 max-w-lg mx-auto">Mulai perjalanan Anda hari ini dan temukan mengapa ribuan orang memilih Wolio Hills.</motion.p>
+          <motion.button initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} whileHover={{ scale: 1.05, y: -3 }} whileTap={{ scale: 0.95 }} onClick={() => startBooking()} className="bg-accent hover:bg-accent-light text-primary font-bold text-sm tracking-wider uppercase px-12 py-5 rounded-full shadow-[0_20px_50px_rgba(201,168,76,0.35)] cursor-pointer transition-colors border-animation">Mulai Pesan Sekarang</motion.button>
         </div>
       </section>
     </>

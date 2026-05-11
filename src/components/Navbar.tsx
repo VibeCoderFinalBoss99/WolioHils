@@ -54,7 +54,7 @@ export default function Navbar({ currentPage, navigate }: NavbarProps) {
             </div>
             <div className="hidden sm:flex flex-col">
               <span className="font-display font-bold text-white text-lg leading-none tracking-wide">Wolio Hills</span>
-              <span className="text-[9px] font-semibold text-accent tracking-[0.3em] uppercase">Premium Malino</span>
+              <span className="text-[9px] font-bold text-white tracking-[0.3em] uppercase">Malino</span>
             </div>
           </motion.div>
 
@@ -81,7 +81,7 @@ export default function Navbar({ currentPage, navigate }: NavbarProps) {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => navigate("book")}
-              className="hidden md:flex items-center gap-2 bg-accent hover:bg-accent-light text-primary font-bold text-xs tracking-wider uppercase px-6 py-2.5 rounded-full shadow-lg shadow-accent/25 transition-colors duration-300 cursor-pointer"
+              className="hidden md:flex items-center gap-2 bg-accent hover:bg-accent-light text-primary font-bold text-xs tracking-wider uppercase px-6 py-2.5 rounded-full shadow-lg shadow-accent/25 transition-colors duration-300 cursor-pointer border-animation"
             >
               Booking Sekarang
             </motion.button>

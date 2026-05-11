@@ -57,7 +57,7 @@ export default function AboutPage({ navigate }: AboutPageProps) {
             Mendefinisikan Ulang <span className="text-gradient">Perjalanan</span> Mewah
           </motion.h1>
           <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="text-white/60 text-lg max-w-2xl mx-auto leading-relaxed">
-            Lahir dari hasrat untuk pengalaman luar biasa, LuxeStay menghubungkan wisatawan pilih dengan properti paling luar biasa di dunia. Kami percaya setiap perjalanan layak dimulai dengan luar biasa.
+            Lahir dari hasrat untuk pengalaman luar biasa, Wolio Hills menghubungkan wisatawan pilih dengan properti paling luar biasa di dunia. Kami percaya setiap perjalanan layak dimulai dengan luar biasa.
           </motion.p>
         </div>
         <div className="absolute bottom-0 left-0 w-full"><svg viewBox="0 0 1440 120" fill="none" className="w-full"><path d="M0,80 C360,120 1080,40 1440,80 L1440,120 L0,120 Z" fill="var(--color-surface)" /></svg></div>
@@ -78,12 +78,12 @@ export default function AboutPage({ navigate }: AboutPageProps) {
             </div>
           </motion.div>
           <motion.div initial={{ opacity: 0, x: 30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }}>
-            <span className="text-accent font-semibold text-xs uppercase tracking-[0.3em]">Tentang LuxeStay</span>
+            <span className="text-accent font-semibold text-xs uppercase tracking-[0.3em]">Tentang Wolio Hills</span>
             <h2 className="font-display font-black text-primary text-4xl mt-3 mb-6">Di Mana Hasrat Bertemu <span className="text-gradient">Kesempurnaan</span></h2>
             <div className="space-y-4 text-text-light leading-relaxed">
-              <p>Didirikan pada tahun 2015, LuxeStay dimulai dengan visi sederhana: membuat akomodasi mewah dapat diakses dan mudah. Yang dimulai sebagai portofolio kecil villa pilihan telah berkembang menjadi platform global yang menampilkan lebih dari 500 properti luar biasa.</p>
+              <p>Didirikan pada tahun 2015, Wolio Hills dimulai dengan visi sederhana: membuat akomodasi mewah dapat diakses dan mudah. Yang dimulai sebagai portofolio kecil villa pilihan telah berkembang menjadi platform global yang menampilkan lebih dari 500 properti luar biasa.</p>
               <p>Tim ahli perjalanan kami secara personal mengunjungi dan memverifikasi setiap properti, memastikan memenuhi standar ketat kami untuk kenyamanan, desain, dan layanan. Kami tidak hanya mencantumkan properti — kami mengkurasi pengalaman.</p>
-              <p>Dari Pegunungan Alpen yang bersalju hingga surga pulau tropis, setiap properti LuxeStay menceritakan kisah unik. Kami mengundang Anda untuk menjadi bagian dari kisah kami.</p>
+              <p>Dari Pegunungan Alpen yang bersalju hingga surga pulau tropis, setiap properti Wolio Hills menceritakan kisah unik. Kami mengundang Anda untuk menjadi bagian dari kisah kami.</p>
             </div>
             <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} onClick={() => navigate("properties")} className="mt-8 bg-primary hover:bg-primary-light text-white font-bold text-sm tracking-wider uppercase px-8 py-3.5 rounded-full shadow-lg cursor-pointer transition-colors">
               Jelajahi Properti
