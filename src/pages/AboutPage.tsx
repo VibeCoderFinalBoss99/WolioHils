@@ -2,9 +2,6 @@ import React, { useState, useEffect, useRef } from "react";
 import { motion } from "motion/react";
 import { Globe, Users, Award, Sparkles, Shield, Eye, Gem } from "lucide-react";
 import { use3DTilt } from "../hooks/use3DTilt";
-import type { PageName } from "../App";
-
-interface AboutPageProps { navigate: (page: PageName) => void; }
 
 function Counter({ target, suffix = "" }: { target: number; suffix?: string }) {
   const [count, setCount] = useState(0);
@@ -45,7 +42,7 @@ function ValueCard({ icon: Icon, title, desc, delay }: { icon: React.ElementType
   );
 }
 
-export default function AboutPage({ navigate }: AboutPageProps) {
+export default function AboutPage() {
   return (
     <>
       {/* HERO */}

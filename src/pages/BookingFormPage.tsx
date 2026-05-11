@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { User, Mail, Phone, Calendar, Users, Bed, MessageSquare, ChevronRight, ChevronLeft, Check, Building2 } from "lucide-react";
 import { PROPERTIES } from "../data/properties";
@@ -74,7 +74,6 @@ export default function BookingFormPage({ bookingData, setBookingData, proceedTo
     
     const checkIn = new Date(bookingData.checkIn);
     const checkOut = new Date(bookingData.checkOut);
-    const nights = Math.max(1, Math.ceil((checkOut.getTime() - checkIn.getTime()) / 86400000));
     
     let totalPrice = 0;
     
@@ -96,8 +95,6 @@ export default function BookingFormPage({ bookingData, setBookingData, proceedTo
   const totalPrice = calculatePrice();
   const nights = bookingData.checkIn && bookingData.checkOut ? Math.max(1, Math.ceil((new Date(bookingData.checkOut).getTime() - new Date(bookingData.checkIn).getTime()) / 86400000)) : 0;
 
-  const isDateBooked = (date: string) => BOOKED_DATES.has(date);
-  
   const inputClass = (field: string) => `w-full bg-surface border ${errors[field] ? "border-error" : "border-surface-dark"} rounded-xl px-4 py-3 text-sm text-text focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent/30 transition-all`;
 
   return (
