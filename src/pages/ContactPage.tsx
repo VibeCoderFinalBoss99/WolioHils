@@ -56,8 +56,8 @@ export default function ContactPage({}: Props) {
       {/* Contact Cards */}
       <section className="py-12 px-6 max-w-5xl mx-auto">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <ContactCard icon={MapPin} title="Alamat" value="123 Luxury Avenue, Makassar, Indonesia" delay={0} />
-          <ContactCard icon={Phone} title="Telepon" value="+62 812-3456-7890" delay={0.1} />
+          <ContactCard icon={MapPin} title="Alamat" value="Malino, Kecamatan Tinggi Moncong, Kabupaten Gowa, Sulawesi Selatan." delay={0} />
+          <ContactCard icon={Phone} title="Telepon" value="081244583677" delay={0.1} />
           <ContactCard icon={Mail} title="Email" value="hello@woliohills.com" delay={0.2} />
           <ContactCard icon={Clock} title="Jam Operasional" value="Support 24/7 Tersedia" delay={0.3} />
         </div>
@@ -116,7 +116,7 @@ export default function ContactPage({}: Props) {
             <div className="w-full h-full min-h-[400px] rounded-3xl overflow-hidden shadow-deep gold-border relative">
               <iframe
                 title="Wolio Hills Location"
-                src="https://maps.google.com/maps?q=Makassar+Indonesia&t=&z=13&ie=UTF8&iwloc=&output=embed"
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3973.116640019884!2d119.90284757570312!3d-5.244363294733539!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2dbe9735ae4c684d%3A0x61b95ea46096be7e!2sWolio%20Hills%20Malino!5e0!3m2!1sid!2sid!4v1778495026013!5m2!1sid!2sid"
                 width="100%"
                 height="100%"
                 style={{ border: 0, minHeight: "400px" }}
@@ -124,12 +124,6 @@ export default function ContactPage({}: Props) {
                 loading="lazy"
                 referrerPolicy="no-referrer-when-downgrade"
               />
-              <div className="absolute bottom-6 left-6 z-10 hidden md:block">
-                <div className="bg-white p-5 rounded-2xl shadow-xl gold-border max-w-[220px]">
-                  <h4 className="font-display font-bold text-primary text-sm mb-1">Kantor Wolio Hills</h4>
-                  <p className="text-text-light text-[10px] leading-relaxed">123 Luxury Avenue,<br />Makassar, Indonesia</p>
-                </div>
-              </div>
             </div>
           </motion.div>
         </div>

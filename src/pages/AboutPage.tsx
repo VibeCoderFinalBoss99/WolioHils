@@ -37,7 +37,8 @@ export default function AboutPage() {
             Mendefinisikan Ulang <span className="text-gradient">Perjalanan</span> Mewah
           </motion.h1>
           <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="text-white/60 text-lg max-w-2xl mx-auto leading-relaxed">
-            Lahir dari hasrat untuk pengalaman luar biasa, Wolio Hills menghubungkan wisatawan pilih dengan properti paling luar biasa di dunia. Kami percaya setiap perjalanan layak dimulai dengan luar biasa.
+            Wolio Hills hadir untuk mereka yang percaya bahwa perjalanan bukan sekadar berpindah tempat
+            melainkan sebuah pengalaman yang layak dikenang. Nyaman, berkesan, dan selalu terasa istimewa.
           </motion.p>
         </div>
         <div className="absolute bottom-0 left-0 w-full"><svg viewBox="0 0 1440 120" fill="none" className="w-full"><path d="M0,80 C360,120 1080,40 1440,80 L1440,120 L0,120 Z" fill="var(--color-surface)" /></svg></div>
@@ -61,15 +62,22 @@ export default function AboutPage() {
             <span className="text-accent font-semibold text-xs uppercase tracking-[0.3em]">Tentang Wolio Hills</span>
             <h2 className="font-display font-black text-primary text-4xl mt-3 mb-6">Di Mana Hasrat Bertemu <span className="text-gradient">Kesempurnaan</span></h2>
             <div className="space-y-4 text-text-light leading-relaxed">
-              <p>Didirikan pada tahun 2015, Wolio Hills dimulai dengan visi sederhana: membuat akomodasi mewah dapat diakses dan mudah. Yang dimulai sebagai portofolio kecil villa pilihan telah berkembang menjadi platform global yang menampilkan lebih dari 500 properti luar biasa.</p>
-              <p>Tim ahli perjalanan kami secara personal mengunjungi dan memverifikasi setiap properti, memastikan memenuhi standar ketat kami untuk kenyamanan, desain, dan layanan. Kami tidak hanya mencantumkan properti — kami mengkurasi pengalaman.</p>
-              <p>Dari Pegunungan Alpen yang bersalju hingga surga pulau tropis, setiap properti Wolio Hills menceritakan kisah unik. Kami mengundang Anda untuk menjadi bagian dari kisah kami.</p>
+              <p>Didirikan dengan satu tujuan sederhana yaitu menghadirkan tempat beristirahat yang tenang, nyaman,
+                dan dekat dengan alam. Wolio Hills Malino lahir dari keinginan untuk memberi setiap tamu
+                pengalaman menginap yang benar-benar berbeda dari biasanya.</p>
+              <p>Setiap sudut properti kami dirancang dengan penuh perhatian dan bukan sekadar tempat tidur,
+                tapi ruang untuk memperlambat langkah, menghirup udara segar pegunungan, dan menikmati
+                pemandangan yang sulit ditemukan di tempat lain. Kami tidak hanya menyewakan rumah,
+                kami menghadirkan ketenangan.</p>
+              <p>Terletak di Malino dengan pesona alam yang khas, Wolio Hills menjadi pelarian sempurna
+                dari kesibukan sehari-hari. Kami mengundang Anda untuk datang, beristirahat,
+                dan membawa pulang kenangan yang tak terlupakan.</p>
             </div>
           </motion.div>
         </div>
       </section>
 
-      
+
       {/* VALUES */}
       <section className="py-20 px-6 max-w-7xl mx-auto">
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center mb-16">
@@ -81,31 +89,6 @@ export default function AboutPage() {
           <ValueCard icon={Shield} title="Kenyamanan Bersama" desc="Setiap villa kami jaga kebersihannya dengan standar tinggi, karena kenyamanan bersama adalah fondasi dari pengalaman menginap yang menyenangkan." delay={0.1} />
           <ValueCard icon={Eye} title="Pelayanan Prima" desc="Tim kami selalu siap membantu kebutuhan Anda selama menginap, dari check-in hingga check-out, karena kebahagiaan Anda adalah prioritas kami." delay={0.2} />
           <ValueCard icon={Gem} title="Pengalaman Terbaik" desc="Kami berkomitmen memberikan lebih dari yang Anda harapkan, karena setiap momen liburan Anda adalah berharga dan harus istimewa." delay={0.3} />
-        </div>
-      </section>
-
-      {/* TEAM */}
-      <section className="py-20 px-6 bg-surface-dark">
-        <div className="max-w-5xl mx-auto">
-          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center mb-16">
-            <span className="text-accent font-semibold text-xs uppercase tracking-[0.3em]">Tim Kami</span>
-            <h2 className="font-display font-black text-primary text-4xl md:text-5xl mt-3">Orang-orang <span className="text-gradient">Di Balik</span></h2>
-          </motion.div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-            {[
-              { name: "Budi Santoso", role: "Founder & CEO", initials: "BS" },
-              { name: "Siti Nurhaliza", role: "Head of Hospitality", initials: "SN" },
-              { name: "Ahmad Wijaya", role: "Property Manager", initials: "AW" },
-            ].map((member, i) => (
-              <motion.div key={i} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.1 }} viewport={{ once: true }} className="bg-white p-8 rounded-3xl shadow-deep gold-border text-center group">
-                <div className="w-20 h-20 rounded-full bg-primary mx-auto mb-5 flex items-center justify-center group-hover:bg-accent transition-colors duration-300">
-                  <span className="font-display font-bold text-accent group-hover:text-white text-xl transition-colors duration-300">{member.initials}</span>
-                </div>
-                <h4 className="font-display font-bold text-primary text-lg">{member.name}</h4>
-                <p className="text-text-light text-sm mt-1">{member.role}</p>
-              </motion.div>
-            ))}
-          </div>
         </div>
       </section>
     </>

@@ -43,7 +43,7 @@ interface VideoData {
 
 export default function HomePage({ startBooking }: HomePageProps) {
   const { scrollY } = useScroll();
-  
+
   // Video data from folder
   const videos: VideoData[] = [
     { id: 1, src: '/videos/Kamar 2.mp4', title: 'Ruangan Nyaman', desc: 'Kamar tidur elegan dengan desain modern dan fasilitas premium untuk kenyamanan maksimal selama menginap.' },
@@ -58,31 +58,31 @@ export default function HomePage({ startBooking }: HomePageProps) {
     console.log('Videos loaded:', videos);
     console.log('Videos folder path:', '/videos/');
   }, []);
-  
+
   // Scroll animations
   const statsOpacity = useTransform(scrollY, [0, 300], [0, 1]);
   const featuresOpacity = useTransform(scrollY, [400, 700], [0, 1]);
   const videoOpacity = useTransform(scrollY, [800, 1100], [0, 1]);
   const villaOpacity = useTransform(scrollY, [1200, 1500], [0, 1]);
   const howItWorksOpacity = useTransform(scrollY, [1600, 1900], [0, 1]);
-  
+
   const statsY = useTransform(scrollY, [300, 800], [50, 0]);
   const featuresY = useTransform(scrollY, [400, 900], [50, 0]);
   const videoY = useTransform(scrollY, [800, 1300], [50, 0]);
   const villaY = useTransform(scrollY, [1200, 1700], [50, 0]);
   const howItWorksY = useTransform(scrollY, [1600, 2100], [50, 0]);
-  
+
   return (
     <>
       {/* HERO */}
       <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
         {/* Full-size background image */}
         <div className="absolute inset-0 w-full h-full">
-          <img 
-            src="https://images.unsplash.com/photo-1582268611958-ebfd161ef9cf?w=1920&q=80" 
-            alt="Luxury villa with pool" 
+          <img
+            src="https://images.unsplash.com/photo-1582268611958-ebfd161ef9cf?w=1920&q=80"
+            alt="Luxury villa with pool"
             className="w-full h-full object-cover object-center"
-            style={{ 
+            style={{
               width: '100vw',
               height: '100vh',
               objectFit: 'cover'
@@ -94,34 +94,34 @@ export default function HomePage({ startBooking }: HomePageProps) {
         <motion.div animate={{ scale: [1.2, 1, 1.2], x: [0, -40, 0] }} transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }} className="absolute bottom-1/4 right-1/4 w-[600px] h-[600px] bg-primary-light/30 rounded-full blur-[150px]" />
 
         <div className="relative z-10 text-center max-w-5xl mx-auto px-6 pt-32 pb-20">
-          <motion.h1 
-            initial={{ opacity: 0, y: 30 }} 
-            animate={{ opacity: 1, y: 0 }} 
-            transition={{ delay: 0.4, duration: 0.8 }} 
+          <motion.h1
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4, duration: 0.8 }}
             className="font-display font-black text-white text-5xl sm:text-6xl md:text-7xl lg:text-8xl leading-[0.9] mb-6 tracking-tight"
             style={{ textShadow: '0 10px 40px rgba(45,67,36,0.3)' }}
           >
             Wolio Hills<br /><span className="text-gradient">Malino</span>
           </motion.h1>
-          <motion.p 
-            initial={{ opacity: 0, y: 20 }} 
-            animate={{ opacity: 1, y: 0 }} 
-            transition={{ delay: 0.6 }} 
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.6 }}
             className="text-white/60 text-base sm:text-lg max-w-2xl mx-auto mb-10 leading-relaxed"
             style={{ textShadow: '0 5px 20px rgba(0,0,0,0.2)' }}
           >
             Wolio Hills Malino - Pengalaman menginap premium di tengah keindahan alam Malino yang memukau. Tempat perfect buat staycation, healing, dan quality time bareng orang tersayang!
           </motion.p>
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }} 
-            animate={{ opacity: 1, y: 0 }} 
-            transition={{ delay: 0.8 }} 
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.8 }}
             className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-8"
           >
-            <motion.button 
-              whileHover={{ scale: 1.05, y: -2, boxShadow: '0 25px 60px rgba(201,168,76,0.4)' }} 
-              whileTap={{ scale: 0.95 }} 
-              onClick={() => startBooking()} 
+            <motion.button
+              whileHover={{ scale: 1.05, y: -2, boxShadow: '0 25px 60px rgba(201,168,76,0.4)' }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => startBooking()}
               className="bg-accent hover:bg-accent-light text-primary font-bold text-sm tracking-wider uppercase px-10 py-4 rounded-full shadow-lg flex items-center gap-3 transition-all duration-300 cursor-pointer"
               style={{ backdropFilter: 'blur(10px)' }}
             >
@@ -135,50 +135,50 @@ export default function HomePage({ startBooking }: HomePageProps) {
 
       {/* STATS SECTION */}
       <section className="py-20 px-6 bg-gradient-to-b from-transparent to-primary/5 relative overflow-hidden">
-        <motion.div 
-          initial={{ opacity: 0 }} 
-          whileInView={{ opacity: 1 }} 
+        <motion.div
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
           className="absolute inset-0 bg-gradient-to-r from-accent/5 via-transparent to-primary/5"
         />
-        <motion.div 
+        <motion.div
           style={{ opacity: statsOpacity, transform: `translateY(${statsY}px)` }}
           className="max-w-6xl mx-auto relative z-10"
         >
-          <motion.div 
-            initial={{ opacity: 0, y: 30 }} 
-            whileInView={{ opacity: 1, y: 0 }} 
-            viewport={{ once: true }} 
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
             className="text-center mb-16"
           >
             <span className="text-accent font-semibold text-xs uppercase tracking-[0.3em]">Kenapa Wolio Hills?</span>
             <h2 className="font-display font-black text-primary text-4xl md:text-5xl mt-3">Pengalaman <span className="text-gradient">Premium</span></h2>
           </motion.div>
-          
-          <motion.div 
-            initial={{ opacity: 0, y: 30 }} 
-            whileInView={{ opacity: 1, y: 0 }} 
-            viewport={{ once: true }} 
+
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
             transition={{ delay: 0.2 }}
             className="bg-white/90 backdrop-blur-md rounded-3xl p-8 max-w-4xl mx-auto shadow-2xl border border-white/30"
             style={{ backdropFilter: 'blur(20px)' }}
           >
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
-              <motion.div 
+              <motion.div
                 whileHover={{ scale: 1.05, y: -5 }}
                 className="group"
               >
-                <div className="text-4xl md:text-5xl font-black text-primary mb-2 group-hover:text-accent transition-colors duration-300">10+</div>
-                <p className="text-primary/80 text-sm font-medium group-hover:text-primary transition-colors duration-300">Pengalaman Mewah</p>
+                <div className="text-6xl md:text-5xl font-black text-primary mb-2 group-hover:text-accent transition-colors duration-300">999+</div>
+                <p className="text-primary/80 text-sm font-medium group-hover:text-primary transition-colors duration-300">Pengalaman Tak Terlupakan</p>
               </motion.div>
-              <motion.div 
+              <motion.div
                 whileHover={{ scale: 1.05, y: -5 }}
                 className="group"
               >
                 <div className="text-4xl md:text-5xl font-black text-primary mb-2 group-hover:text-accent transition-colors duration-300">100%</div>
                 <p className="text-primary/80 text-sm font-medium group-hover:text-primary transition-colors duration-300">Kepuasan Tamu</p>
               </motion.div>
-              <motion.div 
+              <motion.div
                 whileHover={{ scale: 1.05, y: -5 }}
                 className="group"
               >
@@ -192,7 +192,7 @@ export default function HomePage({ startBooking }: HomePageProps) {
 
       {/* FEATURES */}
       <section className="py-20 px-6 max-w-7xl mx-auto relative">
-        <motion.div 
+        <motion.div
           style={{ opacity: featuresOpacity, transform: `translateY(${featuresY}px)` }}
           className="max-w-7xl mx-auto relative z-10"
         >
@@ -201,9 +201,9 @@ export default function HomePage({ startBooking }: HomePageProps) {
             <h2 className="font-display font-black text-primary text-4xl md:text-5xl mt-3">Pengalaman <span className="text-gradient">Wolio Hills</span></h2>
           </motion.div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            <FeatureCard icon={Shield} title="Properti Terverifikasi" desc="Setiap properti diperiksa dan diverifikasi secara personal oleh tim kualitas Wolio Hills." delay={0} />
+            <FeatureCard icon={Shield} title="Mutu Terjamin" desc="Kualitas bukan sekadar kata. Di Wolio Hills, setiap sudut telah melalui seleksi ketat sebelum Anda tiba." delay={0} />
             <FeatureCard icon={Clock} title="Pesan Instan" desc="Pesan menginap sempurna kamu dalam hitungan detik dengan sistem yang Wolio Hills rancang." delay={0.1} />
-            <FeatureCard icon={Headphones} title="Support 24/7" desc="Kami siap membantu kapan saja kamu butuhkan." delay={0.2} />
+            <FeatureCard icon={Headphones} title="Support 24/7" desc="Kami selalu siap membantu kapan saja kamu butuhkan — siang, malam, bahkan di tengah perjalananmu sekalipun." delay={0.2} />
             <FeatureCard icon={Star} title="Harga Terbaik" desc="Wolio Hills jamin harga terbaik. Dengan Kualitas dan Pengalaman yang tentunya sesuai." delay={0.3} />
           </div>
         </motion.div>
@@ -211,124 +211,124 @@ export default function HomePage({ startBooking }: HomePageProps) {
 
       {/* VIDEO SHOWCASE */}
       <section className="py-20 px-6 bg-gradient-to-br from-primary/5 to-accent/5 relative overflow-hidden">
-        <motion.div 
-          animate={{ scale: [1, 1.2, 1] }} 
-          transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }} 
-          className="absolute top-1/4 left-1/4 w-[600px] h-[600px] bg-accent/5 rounded-full blur-[150px]" 
+        <motion.div
+          animate={{ scale: [1, 1.2, 1] }}
+          transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
+          className="absolute top-1/4 left-1/4 w-[600px] h-[600px] bg-accent/5 rounded-full blur-[150px]"
         />
-        <motion.div 
-          animate={{ scale: [1.3, 1, 1.3] }} 
-          transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }} 
-          className="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-primary/10 rounded-full blur-[120px]" 
+        <motion.div
+          animate={{ scale: [1.3, 1, 1.3] }}
+          transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
+          className="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-primary/10 rounded-full blur-[120px]"
         />
-        
-        <motion.div 
+
+        <motion.div
           style={{ opacity: videoOpacity, transform: `translateY(${videoY}px)` }}
           className="max-w-7xl mx-auto relative z-10"
         >
-          <motion.div 
-            initial={{ opacity: 0, y: 30 }} 
-            whileInView={{ opacity: 1, y: 0 }} 
-            viewport={{ once: true }} 
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
             className="text-center mb-16"
           >
             <span className="text-accent font-semibold text-xs uppercase tracking-[0.3em]">Video Experience</span>
             <h2 className="font-display font-black text-primary text-4xl md:text-5xl mt-3">Eksplorasi <span className="text-gradient">Wolio Hills</span></h2>
             <p className="text-text-light text-lg mt-4 max-w-2xl mx-auto">Lihat langsung keindahan dan fasilitas Wolio Hills Malino melalui video-video eksklusif kami.</p>
           </motion.div>
-          
+
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-6">
             {videos.map((video, index) => {
               const isLastVideo = index === videos.length - 1;
               const isSecondRow = index === 2 || index === 3; // Videos 3 and 4 (second row)
               return (
-              <motion.div
-                key={video.id}
-                initial={{ opacity: 0, y: 30, scale: 0.9 }}
-                whileInView={{ opacity: 1, y: 0, scale: 1 }}
-                transition={{ 
-                  delay: index * 0.15, 
-                  duration: 0.8,
-                  ease: [0.25, 0.46, 0.45, 0.94]
-                }}
-                whileHover={{ 
-                  scale: 1.05,
-                  transition: { duration: 0.3, ease: [0.25, 0.46, 0.45, 0.94] }
-                }}
-                className={`group cursor-pointer ${isLastVideo ? 'lg:col-span-1 xl:col-span-1 col-span-2 flex justify-center' : isSecondRow ? 'max-w-sm mx-auto lg:max-w-none xl:max-w-none' : ''}`}
-              >
-                <div className="relative overflow-hidden shadow-lg bg-white rounded-xl md:rounded-2xl hover:shadow-xl transition-all duration-300 h-full">
-                  {/* Video Container */}
-                  <div className="relative aspect-[9/16] w-full">
-                    <video
-                      className="w-full h-full object-cover transition-all duration-500 ease-out group-hover:scale-105 group-hover:brightness-105"
-                      autoPlay
-                      muted
-                      loop
-                      playsInline
-                    >
-                      <source src={video.src} type="video/mp4" />
-                      Your browser does not support video tag.
-                    </video>
-                    
-                    {/* Gradient Overlay */}
-                    <motion.div 
-                      className="absolute inset-0 bg-gradient-to-t from-black/30 via-black/10 to-transparent opacity-0"
-                      whileHover={{ opacity: 1 }}
-                      transition={{ duration: 0.3 }}
-                    />
-                    
-                    {/* Shimmer Effect */}
-                    <motion.div 
-                      className={`absolute inset-0 bg-gradient-to-r from-transparent via-white/15 to-transparent opacity-0 -skew-x-12 ${isLastVideo ? 'left-1/2 -translate-x-1/2 lg:left-auto lg:translate-x-0 xl:left-auto xl:translate-x-0' : ''}`}
-                      whileHover={{ 
-                        opacity: [0, 0.8, 0],
-                        x: ["-100%", "100%"]
-                      }}
-                      transition={{ duration: 0.6, ease: "easeInOut" }}
-                    />
-                    
-                    {/* Pulse Ring Animation */}
+                <motion.div
+                  key={video.id}
+                  initial={{ opacity: 0, y: 30, scale: 0.9 }}
+                  whileInView={{ opacity: 1, y: 0, scale: 1 }}
+                  transition={{
+                    delay: index * 0.15,
+                    duration: 0.8,
+                    ease: [0.25, 0.46, 0.45, 0.94]
+                  }}
+                  whileHover={{
+                    scale: 1.05,
+                    transition: { duration: 0.3, ease: [0.25, 0.46, 0.45, 0.94] }
+                  }}
+                  className={`group cursor-pointer ${isLastVideo ? 'lg:col-span-1 xl:col-span-1 col-span-2 flex justify-center' : isSecondRow ? 'max-w-sm mx-auto lg:max-w-none xl:max-w-none' : ''}`}
+                >
+                  <div className="relative overflow-hidden shadow-lg bg-white rounded-xl md:rounded-2xl hover:shadow-xl transition-all duration-300 h-full">
+                    {/* Video Container */}
+                    <div className="relative aspect-[9/16] w-full">
+                      <video
+                        className="w-full h-full object-cover transition-all duration-500 ease-out group-hover:scale-105 group-hover:brightness-105"
+                        autoPlay
+                        muted
+                        loop
+                        playsInline
+                      >
+                        <source src={video.src} type="video/mp4" />
+                        Your browser does not support video tag.
+                      </video>
+
+                      {/* Gradient Overlay */}
+                      <motion.div
+                        className="absolute inset-0 bg-gradient-to-t from-black/30 via-black/10 to-transparent opacity-0"
+                        whileHover={{ opacity: 1 }}
+                        transition={{ duration: 0.3 }}
+                      />
+
+                      {/* Shimmer Effect */}
+                      <motion.div
+                        className={`absolute inset-0 bg-gradient-to-r from-transparent via-white/15 to-transparent opacity-0 -skew-x-12 ${isLastVideo ? 'left-1/2 -translate-x-1/2 lg:left-auto lg:translate-x-0 xl:left-auto xl:translate-x-0' : ''}`}
+                        whileHover={{
+                          opacity: [0, 0.8, 0],
+                          x: ["-100%", "100%"]
+                        }}
+                        transition={{ duration: 0.6, ease: "easeInOut" }}
+                      />
+
+                      {/* Pulse Ring Animation */}
+                      <motion.div
+                        className={`absolute inset-0 rounded-xl md:rounded-2xl border border-accent/20 ${isLastVideo ? 'left-1/2 -translate-x-1/2 lg:left-auto lg:translate-x-0 xl:left-auto xl:translate-x-0' : ''}`}
+                        animate={{
+                          scale: [1, 1.03, 1],
+                          opacity: [0, 0.2, 0],
+                        }}
+                        transition={{
+                          duration: 3,
+                          repeat: Infinity,
+                          delay: index * 0.4,
+                          ease: "easeInOut"
+                        }}
+                      />
+                    </div>
+
+                    {/* Content */}
                     <motion.div
-                      className={`absolute inset-0 rounded-xl md:rounded-2xl border border-accent/20 ${isLastVideo ? 'left-1/2 -translate-x-1/2 lg:left-auto lg:translate-x-0 xl:left-auto xl:translate-x-0' : ''}`}
-                      animate={{
-                        scale: [1, 1.03, 1],
-                        opacity: [0, 0.2, 0],
-                      }}
-                      transition={{
-                        duration: 3,
-                        repeat: Infinity,
-                        delay: index * 0.4,
-                        ease: "easeInOut"
-                      }}
-                    />
+                      className="p-4 md:p-5"
+                      initial={{ opacity: 0, y: 20 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ delay: index * 0.15 + 0.2 }}
+                    >
+                      <motion.h3
+                        className="font-display font-bold text-primary text-sm md:text-lg mb-2 group-hover:text-accent transition-all duration-300"
+                        whileHover={{ x: 2 }}
+                      >
+                        {video.title}
+                      </motion.h3>
+                      <motion.p
+                        className="text-text-light text-xs md:text-sm leading-relaxed opacity-80 group-hover:opacity-100 transition-opacity duration-300"
+                        initial={{ opacity: 0 }}
+                        whileInView={{ opacity: 0.8 }}
+                        whileHover={{ opacity: 1 }}
+                      >
+                        {video.desc}
+                      </motion.p>
+                    </motion.div>
                   </div>
-                  
-                  {/* Content */}
-                  <motion.div 
-                    className="p-4 md:p-5"
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: index * 0.15 + 0.2 }}
-                  >
-                    <motion.h3 
-                      className="font-display font-bold text-primary text-sm md:text-lg mb-2 group-hover:text-accent transition-all duration-300"
-                      whileHover={{ x: 2 }}
-                    >
-                      {video.title}
-                    </motion.h3>
-                    <motion.p 
-                      className="text-text-light text-xs md:text-sm leading-relaxed opacity-80 group-hover:opacity-100 transition-opacity duration-300"
-                      initial={{ opacity: 0 }}
-                      whileInView={{ opacity: 0.8 }}
-                      whileHover={{ opacity: 1 }}
-                    >
-                      {video.desc}
-                    </motion.p>
-                  </motion.div>
-                </div>
-              </motion.div>
+                </motion.div>
               );
             })}
           </div>
@@ -338,12 +338,12 @@ export default function HomePage({ startBooking }: HomePageProps) {
       {/* VILLA SHOWCASE */}
       <section className="py-20 px-6 bg-primary-dark relative overflow-hidden">
         <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-accent/30 to-transparent" />
-        <motion.div 
-          animate={{ scale: [1, 1.3, 1] }} 
-          transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }} 
-          className="absolute top-1/2 right-1/4 w-[600px] h-[600px] bg-accent/5 rounded-full blur-[150px]" 
+        <motion.div
+          animate={{ scale: [1, 1.3, 1] }}
+          transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+          className="absolute top-1/2 right-1/4 w-[600px] h-[600px] bg-accent/5 rounded-full blur-[150px]"
         />
-        <motion.div 
+        <motion.div
           style={{ opacity: villaOpacity, transform: `translateY(${villaY}px)` }}
           className="max-w-7xl mx-auto relative z-10"
         >
@@ -352,15 +352,15 @@ export default function HomePage({ startBooking }: HomePageProps) {
             <h2 className="font-display font-black text-white text-4xl md:text-5xl mt-3">Wolio Hills <span className="text-gradient">Malino</span></h2>
             <p className="text-white/60 text-lg mt-4 max-w-2xl mx-auto">Destinasi premium di Malino dengan pemandangan alam yang memukau, fasilitas lengkap, dan privasi maksimal. Sempurna untuk liburan keluarga, gathering bareng teman, atau staycation yang menyegarkan pikiran.</p>
           </motion.div>
-          
+
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <motion.div initial={{ opacity: 0, x: -30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} className="relative">
               <div className="rounded-3xl overflow-hidden shadow-2xl">
                 <img src="https://images.unsplash.com/photo-1582268611958-ebfd161ef9cf?w=800&q=80" alt="Wolio Hills Malino" className="w-full h-[400px] object-cover" loading="lazy" />
               </div>
-              <motion.div 
-                animate={{ y: [0, -10, 0] }} 
-                transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }} 
+              <motion.div
+                animate={{ y: [0, -10, 0] }}
+                transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
                 className="absolute -bottom-6 -right-6 bg-accent text-primary p-4 rounded-2xl shadow-xl"
                 style={{ boxShadow: '0 20px 40px rgba(201,168,76,0.3)' }}
               >
@@ -368,15 +368,15 @@ export default function HomePage({ startBooking }: HomePageProps) {
                 <p className="text-xs font-semibold">Perfect Rating</p>
               </motion.div>
             </motion.div>
-            
+
             <motion.div initial={{ opacity: 0, x: 30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} className="space-y-6">
               <div>
                 <h3 className="font-display font-bold text-2xl text-white mb-3">Akomodasi Premium</h3>
                 <p className="text-white/70 leading-relaxed">Akomodasi eksklusif dengan desain modern, fasilitas lengkap, dan pemandangan alam yang memukau. Perfect buat liburan keluarga, gathering bareng teman, atau staycation yang menyegarkan pikiran.</p>
               </div>
-              
+
               <div className="grid grid-cols-2 gap-4">
-                <motion.div 
+                <motion.div
                   whileHover={{ scale: 1.05, y: -5 }}
                   className="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20"
                 >
@@ -384,7 +384,7 @@ export default function HomePage({ startBooking }: HomePageProps) {
                   <h4 className="text-white font-semibold text-sm mb-1">Kamar Tidur</h4>
                   <p className="text-white/60 text-xs">Kapasitas hingga 15 orang</p>
                 </motion.div>
-                <motion.div 
+                <motion.div
                   whileHover={{ scale: 1.05, y: -5 }}
                   className="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20"
                 >
@@ -392,7 +392,7 @@ export default function HomePage({ startBooking }: HomePageProps) {
                   <h4 className="text-white font-semibold text-sm mb-1">View Eksklusif</h4>
                   <p className="text-white/60 text-xs">Pemandangan alam memukau</p>
                 </motion.div>
-                <motion.div 
+                <motion.div
                   whileHover={{ scale: 1.05, y: -5 }}
                   className="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20"
                 >
@@ -400,7 +400,7 @@ export default function HomePage({ startBooking }: HomePageProps) {
                   <h4 className="text-white font-semibold text-sm mb-1">Lokasi Strategis</h4>
                   <p className="text-white/60 text-xs">Malino, Sulawesi Selatan</p>
                 </motion.div>
-                <motion.div 
+                <motion.div
                   whileHover={{ scale: 1.05, y: -5 }}
                   className="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20"
                 >
@@ -409,11 +409,11 @@ export default function HomePage({ startBooking }: HomePageProps) {
                   <p className="text-white/60 text-xs">Tidak ada gangguan</p>
                 </motion.div>
               </div>
-              
-              <motion.button 
-                whileHover={{ scale: 1.05 }} 
-                whileTap={{ scale: 0.95 }} 
-                onClick={() => startBooking(1, "Wolio Hills Malino", 2000000, "https://images.unsplash.com/photo-1582268611958-ebfd161ef9cf?w=800&q=80")} 
+
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => startBooking(1, "Wolio Hills Malino", 2000000, "https://images.unsplash.com/photo-1582268611958-ebfd161ef9cf?w=800&q=80")}
                 className="w-full bg-accent hover:bg-accent-light text-primary font-bold text-sm tracking-wider uppercase px-8 py-4 rounded-full shadow-lg cursor-pointer transition-colors"
                 style={{ boxShadow: '0 20px 40px rgba(201,168,76,0.3)' }}
               >
@@ -426,7 +426,7 @@ export default function HomePage({ startBooking }: HomePageProps) {
 
       {/* HOW IT WORKS */}
       <section className="py-24 px-6 max-w-5xl mx-auto">
-        <motion.div 
+        <motion.div
           style={{ opacity: howItWorksOpacity, transform: `translateY(${howItWorksY}px)` }}
           className="relative z-10"
         >

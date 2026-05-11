@@ -119,8 +119,8 @@ export default function Footer({ navigate }: FooterProps) {
             </h4>
             <div className="space-y-4 mb-6">
               {[
-                { icon: MapPin, text: "Jl. Luxury No. 123, Makassar, Indonesia" },
-                { icon: Phone, text: "+62 812-3456-7890" },
+                { icon: MapPin, text: "Malino, Kecamatan Tinggi Moncong, Kabupaten Gowa, Sulawesi Selatan. " },
+                { icon: Phone, text: "081244583677" },
                 { icon: Mail, text: "halo@woliohills.com" },
               ].map(({ icon: Icon, text }, i) => (
                 <div key={i} className="flex items-start gap-3 group">
