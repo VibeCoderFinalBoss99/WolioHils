@@ -1,0 +1,537 @@
+import React, { useState, useEffect, useRef } from "react";
+import { motion, useScroll, useTransform } from "motion/react";
+import { Star, Shield, Clock, Headphones, ChevronRight, Bed, Bath, Users, MapPin, ArrowRight, Quote } from "lucide-react";
+import { PROPERTIES, TESTIMONIALS } from "../data/properties";
+import { use3DTilt } from "../hooks/use3DTilt";
+import type { PageName } from "../App";
+
+interface HomePageProps {
+  navigate: (page: PageName) => void;
+  startBooking: (id?: number, name?: string, price?: number, image?: string) => void;
+}
+
+function AnimatedCounter({ target, suffix = "" }: { target: number; suffix?: string }) {
+  const [count, setCount] = useState(0);
+  const ref = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const observer = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) {
+        let start = 0;
+        const step = Math.ceil(target / 60);
+        const timer = setInterval(() => {
+          start += step;
+          if (start >= target) { setCount(target); clearInterval(timer); } else { setCount(start); }
+        }, 25);
+        observer.disconnect();
+      }
+    }, { threshold: 0.5 });
+    if (ref.current) observer.observe(ref.current);
+    return () => observer.disconnect();
+  }, [target]);
+  return <span ref={ref}>{count.toLocaleString()}{suffix}</span>;
+}
+
+function PropertyCard({ property, onClick }: { property: typeof PROPERTIES[0]; onClick: () => void }) {
+  const { isHovering, rotateX, rotateY, glareBackground, handleMouseMove, handleMouseLeave, setIsHovering } = use3DTilt();
+  return (
+    <motion.div initial={{ opacity: 0, y: 40 }} whileInView={{ opacity: 1, y: 0 }} transition={{ duration: 0.7 }} viewport={{ once: true }} style={{ perspective: 1200 }} className="group">
+      <motion.div
+        animate={!isHovering ? { rotateX: [0.5, -0.5, 0.5], rotateY: [1, -1, 1] } : {}}
+        transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+        style={{ rotateX: isHovering ? rotateX : undefined, rotateY: isHovering ? rotateY : undefined, transformStyle: "preserve-3d" }}
+        onMouseEnter={() => setIsHovering(true)} onMouseMove={handleMouseMove} onMouseLeave={handleMouseLeave} onClick={onClick}
+        className="bg-white rounded-3xl overflow-hidden shadow-deep hover:shadow-[0_40px_100px_rgba(10,25,41,0.3)] transition-shadow duration-500 cursor-pointer relative"
+      >
+        <div className="relative h-56 overflow-hidden">
+          <img src={property.image} alt={property.name} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" loading="lazy" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
+          {property.featured && <div className="absolute top-4 left-4 bg-accent text-white px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest shadow-lg">Featured</div>}
+          <div className="absolute bottom-4 right-4 bg-white/95 backdrop-blur-sm text-primary px-4 py-2 rounded-xl shadow-lg">
+            <span className="text-[10px] font-semibold text-text-light block leading-none">from</span>
+            <span className="font-display font-bold text-lg leading-none">${property.price}</span>
+            <span className="text-[10px] text-text-light">/night</span>
+          </div>
+          <div className="absolute bottom-4 left-4 flex items-center gap-1.5 bg-white/95 backdrop-blur-sm px-3 py-1.5 rounded-xl shadow-lg">
+            <Star className="w-3.5 h-3.5 text-accent fill-accent" /><span className="font-bold text-xs text-primary">{property.rating}</span><span className="text-[10px] text-text-light">({property.reviews})</span>
+          </div>
+        </div>
+        <div className="p-5">
+          <span className="text-[9px] font-bold uppercase tracking-widest text-accent bg-accent/10 px-2.5 py-1 rounded-full">{property.type}</span>
+          <h3 className="font-display font-bold text-lg text-primary mb-1 mt-2 group-hover:text-accent transition-colors">{property.name}</h3>
+          <div className="flex items-center gap-1 text-text-light mb-3"><MapPin className="w-3 h-3" /><span className="text-xs">{property.location}</span></div>
+          <div className="flex items-center gap-4 text-text-light text-xs border-t border-surface-dark pt-3">
+            <span className="flex items-center gap-1"><Bed className="w-3.5 h-3.5" /> {property.beds}</span>
+            <span className="flex items-center gap-1"><Bath className="w-3.5 h-3.5" /> {property.baths}</span>
+            <span className="flex items-center gap-1"><Users className="w-3.5 h-3.5" /> {property.guests}</span>
+          </div>
+        </div>
+        <motion.div style={{ background: glareBackground, zIndex: 10, pointerEvents: "none" }} className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-3xl" />
+      </motion.div>
+    </motion.div>
+  );
+}
+
+function FeatureCard({ icon: Icon, title, desc, delay }: { icon: React.ElementType; title: string; desc: string; delay: number }) {
+  const { isHovering, rotateX, rotateY, glareBackground, handleMouseMove, handleMouseLeave, setIsHovering } = use3DTilt();
+  return (
+    <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} transition={{ delay, duration: 0.6 }} viewport={{ once: true }} style={{ perspective: 1000 }}>
+      <motion.div
+        animate={!isHovering ? { rotateX: [0.5, -0.5, 0.5], rotateY: [1, -1, 1] } : {}}
+        transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
+        style={{ rotateX: isHovering ? rotateX : undefined, rotateY: isHovering ? rotateY : undefined, transformStyle: "preserve-3d" }}
+        onMouseEnter={() => setIsHovering(true)} onMouseMove={handleMouseMove} onMouseLeave={handleMouseLeave}
+        className="bg-white p-8 rounded-3xl shadow-deep gold-border text-center group relative overflow-hidden h-full cursor-default"
+      >
+        <div style={{ transform: "translateZ(30px)" }} className="w-16 h-16 rounded-2xl bg-primary mx-auto mb-5 flex items-center justify-center shadow-lg group-hover:bg-accent transition-colors duration-300">
+          <Icon className="w-7 h-7 text-accent group-hover:text-white transition-colors duration-300" />
+        </div>
+        <h4 style={{ transform: "translateZ(20px)" }} className="font-display font-bold text-primary text-lg mb-3">{title}</h4>
+        <p style={{ transform: "translateZ(10px)" }} className="text-text-light text-sm leading-relaxed">{desc}</p>
+        <motion.div style={{ background: glareBackground, zIndex: 0, pointerEvents: "none" }} className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-3xl" />
+      </motion.div>
+    </motion.div>
+  );
+}
+
+export default function HomePage({ navigate, startBooking }: HomePageProps) {
+  const { scrollY, scrollYProgress } = useScroll();
+  
+  // Scroll animations
+  const statsOpacity = useTransform(scrollY, [0, 300], [0, 1]);
+  const featuresOpacity = useTransform(scrollY, [400, 700], [0, 1]);
+  const videoOpacity = useTransform(scrollY, [800, 1100], [0, 1]);
+  const villaOpacity = useTransform(scrollY, [1200, 1500], [0, 1]);
+  const howItWorksOpacity = useTransform(scrollY, [1600, 1900], [0, 1]);
+  
+  // Parallax effects
+  const heroY = useTransform(scrollY, [0, 500], [0, -100]);
+  const statsY = useTransform(scrollY, [300, 800], [50, 0]);
+  const featuresY = useTransform(scrollY, [400, 900], [50, 0]);
+  const videoY = useTransform(scrollY, [800, 1300], [50, 0]);
+  const villaY = useTransform(scrollY, [1200, 1700], [50, 0]);
+  const howItWorksY = useTransform(scrollY, [1600, 2100], [50, 0]);
+  
+  const featured = PROPERTIES.filter(p => p.featured).slice(0, 4);
+  return (
+    <>
+      {/* HERO */}
+      <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
+        {/* Full-size background image */}
+        <div className="absolute inset-0">
+          <img 
+            src="https://images.unsplash.com/photo-1582268611958-ebfd161ef9cf?w=1920&q=80" 
+            alt="Luxury villa with pool" 
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/10 to-black/30" />
+        </div>
+        <motion.div animate={{ scale: [1, 1.2, 1], x: [0, 30, 0] }} transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }} className="absolute top-1/4 left-1/4 w-[500px] h-[500px] bg-accent/10 rounded-full blur-[120px]" />
+        <motion.div animate={{ scale: [1.2, 1, 1.2], x: [0, -40, 0] }} transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }} className="absolute bottom-1/4 right-1/4 w-[600px] h-[600px] bg-primary-light/30 rounded-full blur-[150px]" />
+
+        <div className="relative z-10 text-center max-w-5xl mx-auto px-6 pt-32 pb-20">
+          <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/15 text-white px-5 py-2 rounded-full mb-8">
+            <span className="w-2 h-2 rounded-full bg-accent animate-pulse" /><span className="text-xs font-semibold tracking-widest uppercase">Premium Malino</span>
+          </motion.div>
+          <motion.h1 
+            initial={{ opacity: 0, y: 30 }} 
+            animate={{ opacity: 1, y: 0 }} 
+            transition={{ delay: 0.4, duration: 0.8 }} 
+            className="font-display font-black text-white text-5xl sm:text-6xl md:text-7xl lg:text-8xl leading-[0.9] mb-6 tracking-tight"
+            style={{ textShadow: '0 10px 40px rgba(45,67,36,0.3)' }}
+          >
+            Wolio Hills<br /><span className="text-gradient">Malino</span>
+          </motion.h1>
+          <motion.p 
+            initial={{ opacity: 0, y: 20 }} 
+            animate={{ opacity: 1, y: 0 }} 
+            transition={{ delay: 0.6 }} 
+            className="text-white/60 text-base sm:text-lg max-w-2xl mx-auto mb-10 leading-relaxed"
+            style={{ textShadow: '0 5px 20px rgba(0,0,0,0.2)' }}
+          >
+            Wolio Hills Malino - Pengalaman menginap premium di tengah keindahan alam Malino yang memukau. Tempat perfect buat staycation, healing, dan quality time bareng orang tersayang!
+          </motion.p>
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }} 
+            animate={{ opacity: 1, y: 0 }} 
+            transition={{ delay: 0.8 }} 
+            className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-8"
+          >
+            <motion.button 
+              whileHover={{ scale: 1.05, y: -2, boxShadow: '0 25px 60px rgba(201,168,76,0.4)' }} 
+              whileTap={{ scale: 0.95 }} 
+              onClick={() => startBooking()} 
+              className="bg-accent hover:bg-accent-light text-primary font-bold text-sm tracking-wider uppercase px-10 py-4 rounded-full shadow-[0_20px_50px_rgba(201,168,76,0.35)] flex items-center gap-3 transition-all duration-300 cursor-pointer"
+              style={{ backdropFilter: 'blur(10px)' }}
+            >
+              Booking Sekarang <ArrowRight className="w-4 h-4" />
+            </motion.button>
+          </motion.div>
+        </div>
+        <div className="absolute bottom-0 left-0 w-full"><svg viewBox="0 0 1440 120" fill="none" className="w-full"><path d="M0,80 C360,120 1080,40 1440,80 L1440,120 L0,120 Z" fill="var(--color-surface)" /></svg></div>
+      </section>
+
+      {/* STATS SECTION */}
+      <section className="py-20 px-6 bg-gradient-to-b from-transparent to-primary/5 relative overflow-hidden">
+        <motion.div 
+          initial={{ opacity: 0 }} 
+          whileInView={{ opacity: 1 }} 
+          viewport={{ once: true }}
+          className="absolute inset-0 bg-gradient-to-r from-accent/5 via-transparent to-primary/5"
+        />
+        <motion.div 
+          style={{ opacity: statsOpacity, transform: `translateY(${statsY}px)` }}
+          className="max-w-6xl mx-auto relative z-10"
+        >
+          <motion.div 
+            initial={{ opacity: 0, y: 30 }} 
+            whileInView={{ opacity: 1, y: 0 }} 
+            viewport={{ once: true }} 
+            className="text-center mb-16"
+          >
+            <span className="text-accent font-semibold text-xs uppercase tracking-[0.3em]">Kenapa Wolio Hills?</span>
+            <h2 className="font-display font-black text-primary text-4xl md:text-5xl mt-3">Pengalaman <span className="text-gradient">Premium</span></h2>
+          </motion.div>
+          
+          <motion.div 
+            initial={{ opacity: 0, y: 30 }} 
+            whileInView={{ opacity: 1, y: 0 }} 
+            viewport={{ once: true }} 
+            transition={{ delay: 0.2 }}
+            className="bg-white/10 backdrop-blur-md rounded-3xl p-8 max-w-4xl mx-auto shadow-2xl border border-white/20"
+            style={{ backdropFilter: 'blur(20px)' }}
+          >
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+              <motion.div 
+                whileHover={{ scale: 1.05, y: -5 }}
+                className="group"
+              >
+                <div className="text-4xl md:text-5xl font-black text-white mb-2 group-hover:text-accent transition-colors duration-300">1</div>
+                <p className="text-white/70 text-sm font-medium">Properti Eksklusif</p>
+              </motion.div>
+              <motion.div 
+                whileHover={{ scale: 1.05, y: -5 }}
+                className="group"
+              >
+                <div className="text-4xl md:text-5xl font-black text-white mb-2 group-hover:text-accent transition-colors duration-300">100%</div>
+                <p className="text-white/70 text-sm font-medium">Kepuasan Tamu</p>
+              </motion.div>
+              <motion.div 
+                whileHover={{ scale: 1.05, y: -5 }}
+                className="group"
+              >
+                <div className="text-4xl md:text-5xl font-black text-white mb-2 group-hover:text-accent transition-colors duration-300">24/7</div>
+                <p className="text-white/70 text-sm font-medium">Support Tersedia</p>
+              </motion.div>
+            </div>
+          </motion.div>
+        </motion.div>
+      </section>
+
+      {/* FEATURES */}
+      <section className="py-20 px-6 max-w-7xl mx-auto relative">
+        <motion.div 
+          style={{ opacity: featuresOpacity, transform: `translateY(${featuresY}px)` }}
+          className="max-w-7xl mx-auto relative z-10"
+        >
+          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center mb-16">
+            <span className="text-accent font-semibold text-xs uppercase tracking-[0.3em]">Mengapa Memilih Kami</span>
+            <h2 className="font-display font-black text-primary text-4xl md:text-5xl mt-3">Pengalaman <span className="text-gradient">Wolio Hills</span></h2>
+          </motion.div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <FeatureCard icon={Shield} title="Properti Terverifikasi" desc="Setiap properti diperiksa dan diverifikasi secara personal oleh tim kualitas Wolio Hills." delay={0} />
+            <FeatureCard icon={Clock} title="Pesan Instan" desc="Pesan menginap sempurna kamu dalam hitungan detik dengan sistem yang Wolio Hills rancang." delay={0.1} />
+            <FeatureCard icon={Headphones} title="Support 24/7" desc="Tim concierge Wolio Hills yang berdedikasi siap membantu kapan saja kamu butuhkan." delay={0.2} />
+            <FeatureCard icon={Star} title="Harga Terbaik" desc="Wolio Hills jamin harga terbaik. Temukan lebih murah dan kami akan samakan harganya." delay={0.3} />
+          </div>
+        </motion.div>
+      </section>
+
+      {/* VIDEO SHOWCASE */}
+      <section className="py-20 px-6 bg-gradient-to-br from-primary/5 to-accent/5 relative overflow-hidden">
+        <motion.div 
+          animate={{ scale: [1, 1.2, 1] }} 
+          transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }} 
+          className="absolute top-1/4 left-1/4 w-[600px] h-[600px] bg-accent/5 rounded-full blur-[150px]" 
+        />
+        <motion.div 
+          animate={{ scale: [1.3, 1, 1.3] }} 
+          transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }} 
+          className="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-primary/10 rounded-full blur-[120px]" 
+        />
+        
+        <motion.div 
+          style={{ opacity: videoOpacity, transform: `translateY(${videoY}px)` }}
+          className="max-w-7xl mx-auto relative z-10"
+        >
+          <motion.div 
+            initial={{ opacity: 0, y: 30 }} 
+            whileInView={{ opacity: 1, y: 0 }} 
+            viewport={{ once: true }} 
+            className="text-center mb-16"
+          >
+            <span className="text-accent font-semibold text-xs uppercase tracking-[0.3em]">Video Experience</span>
+            <h2 className="font-display font-black text-primary text-4xl md:text-5xl mt-3">Eksplorasi <span className="text-gradient">Wolio Hills</span></h2>
+            <p className="text-text-light text-lg mt-4 max-w-2xl mx-auto">Lihat langsung keindahan dan fasilitas Wolio Hills Malino melalui video-video eksklusif kami.</p>
+          </motion.div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {[
+              {
+                id: 1,
+                title: "Pool & Garden View",
+                desc: "Private pool dengan garden view yang memukau",
+                thumbnail: "https://images.unsplash.com/photo-1582268611958-ebfd161ef9cf?w=600&q=80",
+                duration: "1:30"
+              },
+              {
+                id: 2,
+                title: "Master Bedroom",
+                desc: "Kamar tidur premium dengan mountain view",
+                thumbnail: "https://images.unsplash.com/photo-1611892440507-42a667e1194a?w=600&q=80",
+                duration: "0:45"
+              },
+              {
+                id: 3,
+                title: "Living Room",
+                desc: "Ruang keluarga modern dan cozy",
+                thumbnail: "https://images.unsplash.com/photo-1524755538675-27bc7e65e809?w=600&q=80",
+                duration: "1:15"
+              },
+              {
+                id: 4,
+                title: "Kitchen & Dining",
+                desc: "Dapur lengkap dengan fasilitas modern",
+                thumbnail: "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=600&q=80",
+                duration: "0:55"
+              },
+              {
+                id: 5,
+                title: "Sunset View",
+                desc: "Pemandangan sunset yang epic dari villa",
+                thumbnail: "https://images.unsplash.com/photo-1507525428034-b723a9ce6890?w=600&q=80",
+                duration: "2:00"
+              },
+              {
+                id: 6,
+                title: "Outdoor Activities",
+                desc: "Area outdoor untuk aktivitas keluarga",
+                thumbnail: "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=600&q=80",
+                duration: "1:40"
+              }
+            ].map((video, index) => (
+              <motion.div
+                key={video.id}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: index * 0.1 }}
+                whileHover={{ scale: 1.05, y: -10 }}
+                className="group cursor-pointer"
+              >
+                <div className="relative rounded-2xl overflow-hidden shadow-xl bg-white">
+                  {/* Video Thumbnail */}
+                  <div className="relative aspect-video">
+                    <img 
+                      src={video.thumbnail} 
+                      alt={video.title}
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                    />
+                    
+                    {/* Overlay */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                    
+                    {/* Play Button */}
+                    <motion.div 
+                      className="absolute inset-0 flex items-center justify-center"
+                      whileHover={{ scale: 1.1 }}
+                      whileTap={{ scale: 0.9 }}
+                    >
+                      <div className="w-16 h-16 rounded-full bg-accent/90 backdrop-blur-sm flex items-center justify-center shadow-2xl group-hover:bg-accent transition-colors duration-300">
+                        <svg className="w-6 h-6 text-primary ml-1" fill="currentColor" viewBox="0 0 24 24">
+                          <path d="M8 5v14l11-7z"/>
+                        </svg>
+                      </div>
+                    </motion.div>
+                    
+                    {/* Duration Badge */}
+                    <div className="absolute bottom-3 right-3 bg-black/70 backdrop-blur-sm text-white text-xs px-2 py-1 rounded-full">
+                      {video.duration}
+                    </div>
+                  </div>
+                  
+                  {/* Content */}
+                  <div className="p-5">
+                    <h3 className="font-display font-bold text-primary text-lg mb-2 group-hover:text-accent transition-colors duration-300">
+                      {video.title}
+                    </h3>
+                    <p className="text-text-light text-sm leading-relaxed">
+                      {video.desc}
+                    </p>
+                    
+                    {/* Hover Effects */}
+                    <motion.div 
+                      className="flex items-center gap-2 mt-4 text-accent font-semibold text-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                      initial={{ x: -10 }}
+                      whileHover={{ x: 0 }}
+                    >
+                      <span>Tonton Video</span>
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                      </svg>
+                    </motion.div>
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </motion.div>
+      </section>
+
+      {/* VILLA SHOWCASE */}
+      <section className="py-20 px-6 bg-primary-dark relative overflow-hidden">
+        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-accent/30 to-transparent" />
+        <motion.div 
+          animate={{ scale: [1, 1.3, 1] }} 
+          transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }} 
+          className="absolute top-1/2 right-1/4 w-[600px] h-[600px] bg-accent/5 rounded-full blur-[150px]" 
+        />
+        <motion.div 
+          style={{ opacity: villaOpacity, transform: `translateY(${villaY}px)` }}
+          className="max-w-7xl mx-auto relative z-10"
+        >
+          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center mb-16">
+            <span className="text-accent font-semibold text-xs uppercase tracking-[0.3em]">Properti Tunggal</span>
+            <h2 className="font-display font-black text-white text-4xl md:text-5xl mt-3">Wolio Hills <span className="text-gradient">Malino</span></h2>
+            <p className="text-white/60 text-lg mt-4 max-w-2xl mx-auto">Satu-satunya properti premium di Malino dengan pemandangan epic, fasilitas lengkap, dan privasi maksimal buat liburan keluarga atau staycation bareng temen-temen.</p>
+          </motion.div>
+          
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <motion.div initial={{ opacity: 0, x: -30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} className="relative">
+              <div className="rounded-3xl overflow-hidden shadow-2xl">
+                <img src="https://images.unsplash.com/photo-1582268611958-ebfd161ef9cf?w=800&q=80" alt="Wolio Hills Malino" className="w-full h-[400px] object-cover" loading="lazy" />
+              </div>
+              <motion.div 
+                animate={{ y: [0, -10, 0] }} 
+                transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }} 
+                className="absolute -bottom-6 -right-6 bg-accent text-primary p-4 rounded-2xl shadow-xl"
+                style={{ boxShadow: '0 20px 40px rgba(201,168,76,0.3)' }}
+              >
+                <div className="text-2xl font-bold">⭐ 4.9</div>
+                <p className="text-xs font-semibold">Perfect Rating</p>
+              </motion.div>
+            </motion.div>
+            
+            <motion.div initial={{ opacity: 0, x: 30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} className="space-y-6">
+              <div>
+                <h3 className="font-display font-bold text-2xl text-white mb-3">3 Kamar Premium</h3>
+                <p className="text-white/70 leading-relaxed">Private pool, garden luas, fully furnished, kitchen lengkap, sama view pegunungan yang bikin betah. Perfect buat:</p>
+              </div>
+              
+              <div className="grid grid-cols-2 gap-4">
+                <motion.div 
+                  whileHover={{ scale: 1.05, y: -5 }}
+                  className="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20"
+                >
+                  <Bed className="w-5 h-5 text-accent mb-2" />
+                  <h4 className="text-white font-semibold text-sm mb-1">3 Kamar Tidur</h4>
+                  <p className="text-white/60 text-xs">Cap 10-15 orang</p>
+                </motion.div>
+                <motion.div 
+                  whileHover={{ scale: 1.05, y: -5 }}
+                  className="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20"
+                >
+                  <Users className="w-5 h-5 text-accent mb-2" />
+                  <h4 className="text-white font-semibold text-sm mb-1">Private Pool</h4>
+                  <p className="text-white/60 text-xs">Dengan garden view</p>
+                </motion.div>
+                <motion.div 
+                  whileHover={{ scale: 1.05, y: -5 }}
+                  className="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20"
+                >
+                  <MapPin className="w-5 h-5 text-accent mb-2" />
+                  <h4 className="text-white font-semibold text-sm mb-1">Lokasi Strategis</h4>
+                  <p className="text-white/60 text-xs">Malino, Sulawesi Selatan</p>
+                </motion.div>
+                <motion.div 
+                  whileHover={{ scale: 1.05, y: -5 }}
+                  className="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20"
+                >
+                  <Shield className="w-5 h-5 text-accent mb-2" />
+                  <h4 className="text-white font-semibold text-sm mb-1">Full Privacy</h4>
+                  <p className="text-white/60 text-xs">Tidak ada gangguan</p>
+                </motion.div>
+              </div>
+              
+              <motion.button 
+                whileHover={{ scale: 1.05 }} 
+                whileTap={{ scale: 0.95 }} 
+                onClick={() => startBooking(1, "Wolio Hills Malino", 2000000, "https://images.unsplash.com/photo-1582268611958-ebfd161ef9cf?w=800&q=80")} 
+                className="w-full bg-accent hover:bg-accent-light text-primary font-bold text-sm tracking-wider uppercase px-8 py-4 rounded-full shadow-lg cursor-pointer transition-colors"
+                style={{ boxShadow: '0 20px 40px rgba(201,168,76,0.3)' }}
+              >
+                Booking Sekarang
+              </motion.button>
+            </motion.div>
+          </div>
+        </motion.div>
+      </section>
+
+      {/* HOW IT WORKS */}
+      <section className="py-24 px-6 max-w-5xl mx-auto">
+        <motion.div 
+          style={{ opacity: howItWorksOpacity, transform: `translateY(${howItWorksY}px)` }}
+          className="relative z-10"
+        >
+          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center mb-16">
+            <span className="text-accent font-semibold text-xs uppercase tracking-[0.3em]">Proses Mudah</span>
+            <h2 className="font-display font-black text-primary text-4xl md:text-5xl mt-3">Cara <span className="text-gradient">Pesan</span></h2>
+            <p className="text-text-light text-lg mt-4 max-w-2xl mx-auto">Dalam 3 langkah mudah, kamu bisa booking properti impian kamu di Wolio Hills Malino.</p>
+          </motion.div>
+          <div className="hidden md:block absolute top-16 left-[20%] right-[20%] h-[2px] bg-gradient-to-r from-accent/0 via-accent/30 to-accent/0" />
+          {[{ step: "01", title: "Jelajahi", desc: "Telusuri koleksi premium properti pilihan kami." }, { step: "02", title: "Pesan", desc: "Isi detail Anda dan amankan menginap Anda secara instan." }, { step: "03", title: "Nikmati", desc: "Tiba dan nikmati pengalaman mewah melampaui ekspektasi." }].map((item, i) => (
+            <motion.div key={item.step} initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.15 }} viewport={{ once: true }} className="text-center relative">
+              <motion.div whileHover={{ scale: 1.1, rotate: 5 }} className="w-20 h-20 rounded-2xl bg-primary mx-auto mb-6 flex items-center justify-center shadow-deep relative z-10">
+                <span className="font-display font-bold text-accent text-xl">{item.step}</span>
+              </motion.div>
+              <h4 className="font-display font-bold text-primary text-xl mb-2">{item.title}</h4>
+              <p className="text-text-light text-sm leading-relaxed max-w-xs mx-auto">{item.desc}</p>
+            </motion.div>
+          ))}
+        </div>
+      </section>
+
+      {/* TESTIMONIALS */}
+      <section className="py-20 px-6 bg-surface-dark">
+        <div className="max-w-7xl mx-auto">
+          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center mb-16">
+            <span className="text-accent font-semibold text-xs uppercase tracking-[0.3em]">Testimoni</span>
+            <h2 className="font-display font-black text-primary text-4xl md:text-5xl mt-3">Apa Kata <span className="text-gradient">Tamu Kami</span></h2>
+          </motion.div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {TESTIMONIALS.map((t, i) => (
+              <motion.div key={t.id} initial={{ opacity: 0, scale: 0.9 }} whileInView={{ opacity: 1, scale: 1 }} transition={{ delay: i * 0.1 }} viewport={{ once: true }} className="bg-white p-8 rounded-3xl shadow-deep gold-border relative">
+                <Quote className="w-8 h-8 text-accent/20 absolute top-6 right-6" />
+                <div className="flex items-center gap-4 mb-5">
+                  <div className="w-12 h-12 rounded-full bg-primary flex items-center justify-center text-accent font-bold text-sm">{t.avatar}</div>
+                  <div><h5 className="font-display font-bold text-primary text-sm">{t.name}</h5><p className="text-text-light text-xs">{t.role}</p></div>
+                  <div className="ml-auto flex gap-0.5">{Array.from({ length: t.rating }).map((_, j) => <Star key={j} className="w-3.5 h-3.5 text-accent fill-accent" />)}</div>
+                </div>
+                <p className="text-text-light text-sm leading-relaxed italic">"{t.text}"</p>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* CTA */}
+      <section className="py-24 px-6 hero-gradient relative overflow-hidden">
+        <motion.div animate={{ scale: [1, 1.15, 1] }} transition={{ duration: 10, repeat: Infinity }} className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-accent/5 rounded-full blur-[150px]" />
+        <div className="max-w-3xl mx-auto text-center relative z-10">
+          <motion.h2 initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="font-display font-black text-white text-4xl md:text-6xl mb-6">Siap Merasakan <span className="text-gradient">Kemewahan?</span></motion.h2>
+          <motion.p initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} className="text-white/50 text-lg mb-10 max-w-lg mx-auto">Mulai perjalanan Anda hari ini dan temukan mengapa ribuan orang memilih LuxeStay.</motion.p>
+          <motion.button initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} whileHover={{ scale: 1.05, y: -3 }} whileTap={{ scale: 0.95 }} onClick={() => startBooking()} className="bg-accent hover:bg-accent-light text-primary font-bold text-sm tracking-wider uppercase px-12 py-5 rounded-full shadow-[0_20px_50px_rgba(201,168,76,0.35)] cursor-pointer transition-colors">Mulai Pesan Sekarang</motion.button>
+        </div>
+      </section>
+    </>
+  );
+}
