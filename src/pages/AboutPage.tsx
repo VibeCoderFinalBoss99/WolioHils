@@ -85,9 +85,6 @@ export default function AboutPage({ navigate }: AboutPageProps) {
               <p>Tim ahli perjalanan kami secara personal mengunjungi dan memverifikasi setiap properti, memastikan memenuhi standar ketat kami untuk kenyamanan, desain, dan layanan. Kami tidak hanya mencantumkan properti — kami mengkurasi pengalaman.</p>
               <p>Dari Pegunungan Alpen yang bersalju hingga surga pulau tropis, setiap properti Wolio Hills menceritakan kisah unik. Kami mengundang Anda untuk menjadi bagian dari kisah kami.</p>
             </div>
-            <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} onClick={() => navigate("home")} className="mt-8 bg-primary hover:bg-primary-light text-white font-bold text-sm tracking-wider uppercase px-8 py-3.5 rounded-full shadow-lg cursor-pointer transition-colors">
-              Jelajahi Properti
-            </motion.button>
           </motion.div>
         </div>
       </section>
@@ -97,10 +94,10 @@ export default function AboutPage({ navigate }: AboutPageProps) {
         <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-accent/30 to-transparent" />
         <div className="max-w-5xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-8">
           {[
-            { value: 500, suffix: "+", label: "Properties", icon: Globe },
-            { value: 10000, suffix: "+", label: "Happy Guests", icon: Users },
-            { value: 50, suffix: "+", label: "Countries", icon: Globe },
-            { value: 15, suffix: "", label: "Awards Won", icon: Award },
+            { value: 500, suffix: "+", label: "Properti Unggulan", icon: Globe },
+            { value: 10000, suffix: "+", label: "Tamu Puas", icon: Users },
+            { value: 50, suffix: "+", label: "Destinasi", icon: Globe },
+            { value: 15, suffix: "", label: "Penghargaan", icon: Award },
           ].map((s, i) => (
             <motion.div key={i} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.1 }} viewport={{ once: true }} className="text-center">
               <div className="w-14 h-14 rounded-2xl bg-accent/10 mx-auto mb-4 flex items-center justify-center">
@@ -116,14 +113,14 @@ export default function AboutPage({ navigate }: AboutPageProps) {
       {/* VALUES */}
       <section className="py-20 px-6 max-w-7xl mx-auto">
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center mb-16">
-          <span className="text-accent font-semibold text-xs uppercase tracking-[0.3em]">Our Principles</span>
-          <h2 className="font-display font-black text-primary text-4xl md:text-5xl mt-3">Core <span className="text-gradient">Values</span></h2>
+          <span className="text-accent font-semibold text-xs uppercase tracking-[0.3em]">Prinsip Kami</span>
+          <h2 className="font-display font-black text-primary text-4xl md:text-5xl mt-3">Nilai-nilai <span className="text-gradient">Inti</span></h2>
         </motion.div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          <ValueCard icon={Sparkles} title="Excellence" desc="We pursue perfection in every detail, from property selection to guest experience." delay={0} />
-          <ValueCard icon={Shield} title="Trust" desc="Transparency and integrity are the foundation of every interaction." delay={0.1} />
-          <ValueCard icon={Eye} title="Attention" desc="Every guest receives personalized care tailored to their unique preferences." delay={0.2} />
-          <ValueCard icon={Gem} title="Quality" desc="Only properties meeting our rigorous standards make it to our platform." delay={0.3} />
+          <ValueCard icon={Sparkles} title="Keunggulan" desc="Kami mengejar kesempurnaan dalam setiap detail, dari pemilihan properti hingga pengalaman tamu." delay={0} />
+          <ValueCard icon={Shield} title="Kepercayaan" desc="Transparansi dan integritas adalah fondasi dari setiap interaksi." delay={0.1} />
+          <ValueCard icon={Eye} title="Perhatian" desc="Setiap tamu menerima perhatian personal yang disesuaikan dengan preferensi unik mereka." delay={0.2} />
+          <ValueCard icon={Gem} title="Kualitas" desc="Hanya properti yang memenuhi standar ketat kami yang masuk ke platform." delay={0.3} />
         </div>
       </section>
 
@@ -131,8 +128,8 @@ export default function AboutPage({ navigate }: AboutPageProps) {
       <section className="py-20 px-6 bg-surface-dark">
         <div className="max-w-5xl mx-auto">
           <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center mb-16">
-            <span className="text-accent font-semibold text-xs uppercase tracking-[0.3em]">Meet The Team</span>
-            <h2 className="font-display font-black text-primary text-4xl md:text-5xl mt-3">The People <span className="text-gradient">Behind</span></h2>
+            <span className="text-accent font-semibold text-xs uppercase tracking-[0.3em]">Tim Kami</span>
+            <h2 className="font-display font-black text-primary text-4xl md:text-5xl mt-3">Orang-orang <span className="text-gradient">Di Balik</span></h2>
           </motion.div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
             {[
