@@ -79,8 +79,8 @@ export default function HomePage({ startBooking }: HomePageProps) {
         {/* Full-size background image */}
         <div className="absolute inset-0 w-full h-full">
           <img
-            src="https://images.unsplash.com/photo-1582268611958-ebfd161ef9cf?w=1920&q=80"
-            alt="Luxury villa with pool"
+            src="./images/hero-section.png"
+            alt="Wolio Hills Malino"
             className="w-full h-full object-cover object-center"
             style={{
               width: '100vw',
@@ -356,7 +356,7 @@ export default function HomePage({ startBooking }: HomePageProps) {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <motion.div initial={{ opacity: 0, x: -30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} className="relative">
               <div className="rounded-3xl overflow-hidden shadow-2xl">
-                <img src="https://images.unsplash.com/photo-1582268611958-ebfd161ef9cf?w=800&q=80" alt="Wolio Hills Malino" className="w-full h-[400px] object-cover" loading="lazy" />
+                <img src="./images/picture-2.png" alt="Wolio Hills Malino" className="w-full h-[400px] object-cover" loading="lazy" />
               </div>
               <motion.div
                 animate={{ y: [0, -10, 0] }}

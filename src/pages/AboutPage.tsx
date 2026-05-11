@@ -50,11 +50,11 @@ export default function AboutPage() {
           <motion.div initial={{ opacity: 0, x: -30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }}>
             <div className="relative">
               <div className="rounded-3xl overflow-hidden shadow-deep">
-                <img src="https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=800&q=80" alt="Luxury hotel lobby" className="w-full h-[400px] object-cover" loading="lazy" />
+                <img src="./images/picture-3.png" alt="Luxury hotel lobby" className="w-full h-[400px] object-cover" loading="lazy" />
               </div>
               <motion.div animate={{ y: [0, -10, 0], rotate: [-2, 2, -2] }} transition={{ duration: 5, repeat: Infinity }} className="absolute -bottom-8 -right-8 bg-accent text-primary p-6 rounded-2xl shadow-xl">
-                <span className="font-display font-bold text-3xl block">10+</span>
-                <span className="text-xs font-semibold uppercase tracking-widest">Tahun Keunggulan</span>
+                <span className="font-display font-bold text-3xl block">100%</span>
+                <span className="text-xs font-semibold uppercase tracking-widest">Self Healing</span>
               </motion.div>
             </div>
           </motion.div>
