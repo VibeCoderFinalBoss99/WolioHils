@@ -1,7 +1,7 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useEffect } from "react";
 import { motion, useScroll, useTransform } from "motion/react";
-import { Star, Shield, Clock, Headphones, ChevronRight, Bed, Bath, Users, MapPin, ArrowRight, Quote } from "lucide-react";
-import { PROPERTIES, TESTIMONIALS } from "../data/properties";
+import { Star, Shield, Clock, Headphones, Bed, Users, MapPin, ArrowRight, Quote } from "lucide-react";
+import { TESTIMONIALS } from "../data/properties";
 import { use3DTilt } from "../hooks/use3DTilt";
 import type { PageName } from "../App";
 
@@ -10,66 +10,7 @@ interface HomePageProps {
   startBooking: (id?: number, name?: string, price?: number, image?: string) => void;
 }
 
-function AnimatedCounter({ target, suffix = "" }: { target: number; suffix?: string }) {
-  const [count, setCount] = useState(0);
-  const ref = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    const observer = new IntersectionObserver(([entry]) => {
-      if (entry.isIntersecting) {
-        let start = 0;
-        const step = Math.ceil(target / 60);
-        const timer = setInterval(() => {
-          start += step;
-          if (start >= target) { setCount(target); clearInterval(timer); } else { setCount(start); }
-        }, 25);
-        observer.disconnect();
-      }
-    }, { threshold: 0.5 });
-    if (ref.current) observer.observe(ref.current);
-    return () => observer.disconnect();
-  }, [target]);
-  return <span ref={ref}>{count.toLocaleString()}{suffix}</span>;
-}
 
-function PropertyCard({ property, onClick }: { property: typeof PROPERTIES[0]; onClick: () => void }) {
-  const { isHovering, rotateX, rotateY, glareBackground, handleMouseMove, handleMouseLeave, setIsHovering } = use3DTilt();
-  return (
-    <motion.div initial={{ opacity: 0, y: 40 }} whileInView={{ opacity: 1, y: 0 }} transition={{ duration: 0.7 }} viewport={{ once: true }} style={{ perspective: 1200 }} className="group">
-      <motion.div
-        animate={!isHovering ? { rotateX: [0.5, -0.5, 0.5], rotateY: [1, -1, 1] } : {}}
-        transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
-        style={{ rotateX: isHovering ? rotateX : undefined, rotateY: isHovering ? rotateY : undefined, transformStyle: "preserve-3d" }}
-        onMouseEnter={() => setIsHovering(true)} onMouseMove={handleMouseMove} onMouseLeave={handleMouseLeave} onClick={onClick}
-        className="bg-white rounded-3xl overflow-hidden shadow-deep hover:shadow-[0_40px_100px_rgba(10,25,41,0.3)] transition-shadow duration-500 cursor-pointer relative"
-      >
-        <div className="relative h-56 overflow-hidden">
-          <img src={property.image} alt={property.name} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" loading="lazy" />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
-          {property.featured && <div className="absolute top-4 left-4 bg-accent text-white px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest shadow-lg">Featured</div>}
-          <div className="absolute bottom-4 right-4 bg-white/95 backdrop-blur-sm text-primary px-4 py-2 rounded-xl shadow-lg">
-            <span className="text-[10px] font-semibold text-text-light block leading-none">from</span>
-            <span className="font-display font-bold text-lg leading-none">${property.price}</span>
-            <span className="text-[10px] text-text-light">/night</span>
-          </div>
-          <div className="absolute bottom-4 left-4 flex items-center gap-1.5 bg-white/95 backdrop-blur-sm px-3 py-1.5 rounded-xl shadow-lg">
-            <Star className="w-3.5 h-3.5 text-accent fill-accent" /><span className="font-bold text-xs text-primary">{property.rating}</span><span className="text-[10px] text-text-light">({property.reviews})</span>
-          </div>
-        </div>
-        <div className="p-5">
-          <span className="text-[9px] font-bold uppercase tracking-widest text-accent bg-accent/10 px-2.5 py-1 rounded-full">{property.type}</span>
-          <h3 className="font-display font-bold text-lg text-primary mb-1 mt-2 group-hover:text-accent transition-colors">{property.name}</h3>
-          <div className="flex items-center gap-1 text-text-light mb-3"><MapPin className="w-3 h-3" /><span className="text-xs">{property.location}</span></div>
-          <div className="flex items-center gap-4 text-text-light text-xs border-t border-surface-dark pt-3">
-            <span className="flex items-center gap-1"><Bed className="w-3.5 h-3.5" /> {property.beds}</span>
-            <span className="flex items-center gap-1"><Bath className="w-3.5 h-3.5" /> {property.baths}</span>
-            <span className="flex items-center gap-1"><Users className="w-3.5 h-3.5" /> {property.guests}</span>
-          </div>
-        </div>
-        <motion.div style={{ background: glareBackground, zIndex: 10, pointerEvents: "none" }} className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-3xl" />
-      </motion.div>
-    </motion.div>
-  );
-}
 
 function FeatureCard({ icon: Icon, title, desc, delay }: { icon: React.ElementType; title: string; desc: string; delay: number }) {
   const { isHovering, rotateX, rotateY, glareBackground, handleMouseMove, handleMouseLeave, setIsHovering } = use3DTilt();
@@ -93,8 +34,30 @@ function FeatureCard({ icon: Icon, title, desc, delay }: { icon: React.ElementTy
   );
 }
 
-export default function HomePage({ navigate, startBooking }: HomePageProps) {
-  const { scrollY, scrollYProgress } = useScroll();
+interface VideoData {
+  id: number;
+  src: string;
+  title: string;
+  desc?: string;
+}
+
+export default function HomePage({ startBooking }: HomePageProps) {
+  const { scrollY } = useScroll();
+  
+  // Video data from folder
+  const videos: VideoData[] = [
+    { id: 1, src: '/videos/Kamar 2.mp4', title: 'Ruangan Nyaman', desc: 'Kamar tidur elegan dengan desain modern dan fasilitas premium untuk kenyamanan maksimal selama menginap.' },
+    { id: 2, src: '/videos/Kamar Utama WolioHills Malino.mp4', title: 'Master Suite', desc: 'Suite utama mewah dengan pemandangan pegunungan yang memukau dan interior yang sangat eksklusif.' },
+    { id: 3, src: '/videos/AQPID_FrWBbQc42KzRwuMv5ZxOM8EPGcxl-gNfa6Haur_YLcSGyJNNmRBu986ErbgkDiwZ7Xm0lLoPAX6f1RPGbpuGNDIrLu.mp4', title: 'Mountain View', desc: 'Pemandangan pegunungan yang hijau dan memukau dari villa, suasana segar dan menenangkan.' },
+    { id: 4, src: '/videos/AQPzTBWRPErBRSBgwgtoPXd4ao3HQIc8Pb4Oi3RFryqSJJ111hGC6shizQBaE83KiIG4Hjb72Kqyc078KH86BkVZHtz2oBxp.mp4', title: 'Tropical Garden', desc: 'Perkebunan tropis yang asri dan hijau, nuansa alami yang menyegarkan di tengah Malino.' },
+    { id: 5, src: '/videos/overview.mp4', title: 'Villa Panorama', desc: 'Panorama lengkap villa dengan latar pegunungan dan perkebunan yang indah, pemandangan eksklusif Wolio Hills.' }
+  ];
+
+  // Debug: Check if videos are loaded
+  React.useEffect(() => {
+    console.log('Videos loaded:', videos);
+    console.log('Videos folder path:', '/videos/');
+  }, []);
   
   // Scroll animations
   const statsOpacity = useTransform(scrollY, [0, 300], [0, 1]);
@@ -103,15 +66,12 @@ export default function HomePage({ navigate, startBooking }: HomePageProps) {
   const villaOpacity = useTransform(scrollY, [1200, 1500], [0, 1]);
   const howItWorksOpacity = useTransform(scrollY, [1600, 1900], [0, 1]);
   
-  // Parallax effects
-  const heroY = useTransform(scrollY, [0, 500], [0, -100]);
   const statsY = useTransform(scrollY, [300, 800], [50, 0]);
   const featuresY = useTransform(scrollY, [400, 900], [50, 0]);
   const videoY = useTransform(scrollY, [800, 1300], [50, 0]);
   const villaY = useTransform(scrollY, [1200, 1700], [50, 0]);
   const howItWorksY = useTransform(scrollY, [1600, 2100], [50, 0]);
   
-  const featured = PROPERTIES.filter(p => p.featured).slice(0, 4);
   return (
     <>
       {/* HERO */}
@@ -167,6 +127,7 @@ export default function HomePage({ navigate, startBooking }: HomePageProps) {
             </motion.button>
           </motion.div>
         </div>
+
         <div className="absolute bottom-0 left-0 w-full"><svg viewBox="0 0 1440 120" fill="none" className="w-full"><path d="M0,80 C360,120 1080,40 1440,80 L1440,120 L0,120 Z" fill="var(--color-surface)" /></svg></div>
       </section>
 
@@ -206,21 +167,21 @@ export default function HomePage({ navigate, startBooking }: HomePageProps) {
                 className="group"
               >
                 <div className="text-4xl md:text-5xl font-black text-white mb-2 group-hover:text-accent transition-colors duration-300">1</div>
-                <p className="text-white/70 text-sm font-medium">Properti Eksklusif</p>
+                <p className="text-white/90 text-sm font-medium group-hover:text-white transition-colors duration-300">Properti Eksklusif</p>
               </motion.div>
               <motion.div 
                 whileHover={{ scale: 1.05, y: -5 }}
                 className="group"
               >
                 <div className="text-4xl md:text-5xl font-black text-white mb-2 group-hover:text-accent transition-colors duration-300">100%</div>
-                <p className="text-white/70 text-sm font-medium">Kepuasan Tamu</p>
+                <p className="text-white/90 text-sm font-medium group-hover:text-white transition-colors duration-300">Kepuasan Tamu</p>
               </motion.div>
               <motion.div 
                 whileHover={{ scale: 1.05, y: -5 }}
                 className="group"
               >
                 <div className="text-4xl md:text-5xl font-black text-white mb-2 group-hover:text-accent transition-colors duration-300">24/7</div>
-                <p className="text-white/70 text-sm font-medium">Support Tersedia</p>
+                <p className="text-white/90 text-sm font-medium group-hover:text-white transition-colors duration-300">Support Tersedia</p>
               </motion.div>
             </div>
           </motion.div>
@@ -274,112 +235,94 @@ export default function HomePage({ navigate, startBooking }: HomePageProps) {
             <p className="text-text-light text-lg mt-4 max-w-2xl mx-auto">Lihat langsung keindahan dan fasilitas Wolio Hills Malino melalui video-video eksklusif kami.</p>
           </motion.div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {[
-              {
-                id: 1,
-                title: "Pool & Garden View",
-                desc: "Private pool dengan garden view yang memukau",
-                thumbnail: "https://images.unsplash.com/photo-1582268611958-ebfd161ef9cf?w=600&q=80",
-                duration: "1:30"
-              },
-              {
-                id: 2,
-                title: "Master Bedroom",
-                desc: "Kamar tidur premium dengan mountain view",
-                thumbnail: "https://images.unsplash.com/photo-1611892440507-42a667e1194a?w=600&q=80",
-                duration: "0:45"
-              },
-              {
-                id: 3,
-                title: "Living Room",
-                desc: "Ruang keluarga modern dan cozy",
-                thumbnail: "https://images.unsplash.com/photo-1524755538675-27bc7e65e809?w=600&q=80",
-                duration: "1:15"
-              },
-              {
-                id: 4,
-                title: "Kitchen & Dining",
-                desc: "Dapur lengkap dengan fasilitas modern",
-                thumbnail: "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=600&q=80",
-                duration: "0:55"
-              },
-              {
-                id: 5,
-                title: "Sunset View",
-                desc: "Pemandangan sunset yang epic dari villa",
-                thumbnail: "https://images.unsplash.com/photo-1507525428034-b723a9ce6890?w=600&q=80",
-                duration: "2:00"
-              },
-              {
-                id: 6,
-                title: "Outdoor Activities",
-                desc: "Area outdoor untuk aktivitas keluarga",
-                thumbnail: "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=600&q=80",
-                duration: "1:40"
-              }
-            ].map((video, index) => (
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-6 justify-items-center">
+            {videos.map((video, index) => (
               <motion.div
                 key={video.id}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.1 }}
-                whileHover={{ scale: 1.05, y: -10 }}
-                className="group cursor-pointer"
+                initial={{ opacity: 0, y: 30, scale: 0.9 }}
+                whileInView={{ opacity: 1, y: 0, scale: 1 }}
+                viewport={{ once: true, margin: "-100px" }}
+                transition={{ 
+                  delay: index * 0.15, 
+                  duration: 0.8,
+                  ease: [0.25, 0.46, 0.45, 0.94]
+                }}
+                whileHover={{ 
+                  scale: 1.05,
+                  transition: { duration: 0.3, ease: [0.25, 0.46, 0.45, 0.94] }
+                }}
+                className={`group cursor-pointer ${videos.length % 2 === 1 && index === videos.length - 1 ? 'md:col-span-1 lg:col-span-1 xl:col-span-1' : ''}`}
               >
-                <div className="relative rounded-2xl overflow-hidden shadow-xl bg-white">
-                  {/* Video Thumbnail */}
-                  <div className="relative aspect-video">
-                    <img 
-                      src={video.thumbnail} 
-                      alt={video.title}
-                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                <div className="relative overflow-hidden shadow-lg bg-white rounded-xl md:rounded-2xl hover:shadow-xl transition-all duration-300">
+                  {/* Video Container */}
+                  <div className="relative aspect-[9/16] w-full max-w-[200px] md:max-w-[280px] mx-auto">
+                    <video
+                      className="w-full h-full object-cover transition-all duration-500 ease-out group-hover:scale-105 group-hover:brightness-105"
+                      autoPlay
+                      muted
+                      loop
+                      playsInline
+                    >
+                      <source src={video.src} type="video/mp4" />
+                      Your browser does not support the video tag.
+                    </video>
+                    
+                    {/* Gradient Overlay */}
+                    <motion.div 
+                      className="absolute inset-0 bg-gradient-to-t from-black/30 via-black/10 to-transparent opacity-0"
+                      whileHover={{ opacity: 1 }}
+                      transition={{ duration: 0.3 }}
                     />
                     
-                    {/* Overlay */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                    
-                    {/* Play Button */}
+                    {/* Shimmer Effect */}
                     <motion.div 
-                      className="absolute inset-0 flex items-center justify-center"
-                      whileHover={{ scale: 1.1 }}
-                      whileTap={{ scale: 0.9 }}
-                    >
-                      <div className="w-16 h-16 rounded-full bg-accent/90 backdrop-blur-sm flex items-center justify-center shadow-2xl group-hover:bg-accent transition-colors duration-300">
-                        <svg className="w-6 h-6 text-primary ml-1" fill="currentColor" viewBox="0 0 24 24">
-                          <path d="M8 5v14l11-7z"/>
-                        </svg>
-                      </div>
-                    </motion.div>
+                      className="absolute inset-0 bg-gradient-to-r from-transparent via-white/15 to-transparent opacity-0 -skew-x-12"
+                      whileHover={{ 
+                        opacity: [0, 0.8, 0],
+                        x: ["-100%", "100%"]
+                      }}
+                      transition={{ duration: 0.6, ease: "easeInOut" }}
+                    />
                     
-                    {/* Duration Badge */}
-                    <div className="absolute bottom-3 right-3 bg-black/70 backdrop-blur-sm text-white text-xs px-2 py-1 rounded-full">
-                      {video.duration}
-                    </div>
+                    {/* Pulse Ring Animation */}
+                    <motion.div
+                      className="absolute inset-0 rounded-xl md:rounded-2xl border border-accent/20"
+                      animate={{
+                        scale: [1, 1.03, 1],
+                        opacity: [0, 0.2, 0],
+                      }}
+                      transition={{
+                        duration: 3,
+                        repeat: Infinity,
+                        delay: index * 0.4,
+                        ease: "easeInOut"
+                      }}
+                    />
                   </div>
                   
                   {/* Content */}
-                  <div className="p-5">
-                    <h3 className="font-display font-bold text-primary text-lg mb-2 group-hover:text-accent transition-colors duration-300">
-                      {video.title}
-                    </h3>
-                    <p className="text-text-light text-sm leading-relaxed">
-                      {video.desc}
-                    </p>
-                    
-                    {/* Hover Effects */}
-                    <motion.div 
-                      className="flex items-center gap-2 mt-4 text-accent font-semibold text-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                      initial={{ x: -10 }}
-                      whileHover={{ x: 0 }}
+                  <motion.div 
+                    className="p-4 md:p-5"
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: index * 0.15 + 0.2 }}
+                  >
+                    <motion.h3 
+                      className="font-display font-bold text-primary text-sm md:text-lg mb-2 group-hover:text-accent transition-all duration-300"
+                      whileHover={{ x: 2 }}
                     >
-                      <span>Tonton Video</span>
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                      </svg>
-                    </motion.div>
-                  </div>
+                      {video.title}
+                    </motion.h3>
+                    <motion.p 
+                      className="text-text-light text-xs md:text-sm leading-relaxed opacity-80 group-hover:opacity-100 transition-opacity duration-300"
+                      initial={{ opacity: 0 }}
+                      whileInView={{ opacity: 0.8 }}
+                      whileHover={{ opacity: 1 }}
+                    >
+                      {video.desc}
+                    </motion.p>
+                  </motion.div>
                 </div>
               </motion.div>
             ))}
@@ -485,10 +428,10 @@ export default function HomePage({ navigate, startBooking }: HomePageProps) {
           <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center mb-16">
             <span className="text-accent font-semibold text-xs uppercase tracking-[0.3em]">Proses Mudah</span>
             <h2 className="font-display font-black text-primary text-4xl md:text-5xl mt-3">Cara <span className="text-gradient">Pesan</span></h2>
-            <p className="text-text-light text-lg mt-4 max-w-2xl mx-auto">Dalam 3 langkah mudah, kamu bisa booking properti impian kamu di Wolio Hills Malino.</p>
+            <p className="text-text-light text-lg mt-4 max-w-2xl mx-auto">Klik Booking Sekarang, Isi data diri dan nikmati.</p>
           </motion.div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {[{ step: "01", title: "Jelajahi", desc: "Telusuri koleksi premium properti pilihan kami." }, { step: "02", title: "Pesan", desc: "Isi detail Anda dan amankan menginap Anda secara instan." }, { step: "03", title: "Nikmati", desc: "Tiba dan nikmati pengalaman mewah melampaui ekspektasi." }].map((item, i) => (
+            {[{ step: "01", title: "Booking", desc: "Klik tombol booking sekarang untuk memulai." }, { step: "02", title: "Isi Data", desc: "Lengkapi data diri dengan benar." }, { step: "03", title: "Nikmati", desc: "Siap untuk menikmati pengalaman menginap." }].map((item, i) => (
               <motion.div key={item.step} initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.15 }} viewport={{ once: true }} className="text-center relative">
                 <motion.div whileHover={{ scale: 1.1, rotate: 5 }} className="w-20 h-20 rounded-2xl bg-primary mx-auto mb-6 flex items-center justify-center shadow-deep relative z-10">
                   <span className="font-display font-bold text-accent text-xl">{item.step}</span>

@@ -95,7 +95,7 @@
   }
 
   .hero-gradient {
-    background: linear-gradient(135deg, #0A1929 0%, #0F2D52 40%, #1A4175 70%, #0F2D52 100%);
+    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-light) 40%, var(--color-accent) 70%, var(--color-primary) 100%);
   }
 
   .gold-border {
