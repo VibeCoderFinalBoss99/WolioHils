@@ -158,7 +158,7 @@ export default function HomePage({ startBooking }: HomePageProps) {
             whileInView={{ opacity: 1, y: 0 }} 
             viewport={{ once: true }} 
             transition={{ delay: 0.2 }}
-            className="bg-white/10 backdrop-blur-md rounded-3xl p-8 max-w-4xl mx-auto shadow-2xl border border-white/20"
+            className="bg-white/90 backdrop-blur-md rounded-3xl p-8 max-w-4xl mx-auto shadow-2xl border border-white/30"
             style={{ backdropFilter: 'blur(20px)' }}
           >
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
@@ -166,22 +166,22 @@ export default function HomePage({ startBooking }: HomePageProps) {
                 whileHover={{ scale: 1.05, y: -5 }}
                 className="group"
               >
-                <div className="text-4xl md:text-5xl font-black text-white mb-2 group-hover:text-accent transition-colors duration-300">1</div>
-                <p className="text-white/90 text-sm font-medium group-hover:text-white transition-colors duration-300">Properti Eksklusif</p>
+                <div className="text-4xl md:text-5xl font-black text-primary mb-2 group-hover:text-accent transition-colors duration-300">1</div>
+                <p className="text-primary/80 text-sm font-medium group-hover:text-primary transition-colors duration-300">Properti Eksklusif</p>
               </motion.div>
               <motion.div 
                 whileHover={{ scale: 1.05, y: -5 }}
                 className="group"
               >
-                <div className="text-4xl md:text-5xl font-black text-white mb-2 group-hover:text-accent transition-colors duration-300">100%</div>
-                <p className="text-white/90 text-sm font-medium group-hover:text-white transition-colors duration-300">Kepuasan Tamu</p>
+                <div className="text-4xl md:text-5xl font-black text-primary mb-2 group-hover:text-accent transition-colors duration-300">100%</div>
+                <p className="text-primary/80 text-sm font-medium group-hover:text-primary transition-colors duration-300">Kepuasan Tamu</p>
               </motion.div>
               <motion.div 
                 whileHover={{ scale: 1.05, y: -5 }}
                 className="group"
               >
-                <div className="text-4xl md:text-5xl font-black text-white mb-2 group-hover:text-accent transition-colors duration-300">24/7</div>
-                <p className="text-white/90 text-sm font-medium group-hover:text-white transition-colors duration-300">Support Tersedia</p>
+                <div className="text-4xl md:text-5xl font-black text-primary mb-2 group-hover:text-accent transition-colors duration-300">24/7</div>
+                <p className="text-primary/80 text-sm font-medium group-hover:text-primary transition-colors duration-300">Support Tersedia</p>
               </motion.div>
             </div>
           </motion.div>
@@ -235,13 +235,12 @@ export default function HomePage({ startBooking }: HomePageProps) {
             <p className="text-text-light text-lg mt-4 max-w-2xl mx-auto">Lihat langsung keindahan dan fasilitas Wolio Hills Malino melalui video-video eksklusif kami.</p>
           </motion.div>
           
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-6 justify-items-center">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-6">
             {videos.map((video, index) => (
               <motion.div
                 key={video.id}
                 initial={{ opacity: 0, y: 30, scale: 0.9 }}
                 whileInView={{ opacity: 1, y: 0, scale: 1 }}
-                viewport={{ once: true, margin: "-100px" }}
                 transition={{ 
                   delay: index * 0.15, 
                   duration: 0.8,
@@ -251,11 +250,11 @@ export default function HomePage({ startBooking }: HomePageProps) {
                   scale: 1.05,
                   transition: { duration: 0.3, ease: [0.25, 0.46, 0.45, 0.94] }
                 }}
-                className={`group cursor-pointer ${videos.length % 2 === 1 && index === videos.length - 1 ? 'md:col-span-1 lg:col-span-1 xl:col-span-1' : ''}`}
+                className="group cursor-pointer"
               >
-                <div className="relative overflow-hidden shadow-lg bg-white rounded-xl md:rounded-2xl hover:shadow-xl transition-all duration-300">
+                <div className="relative overflow-hidden shadow-lg bg-white rounded-xl md:rounded-2xl hover:shadow-xl transition-all duration-300 h-full">
                   {/* Video Container */}
-                  <div className="relative aspect-[9/16] w-full max-w-[200px] md:max-w-[280px] mx-auto">
+                  <div className="relative aspect-[9/16] w-full">
                     <video
                       className="w-full h-full object-cover transition-all duration-500 ease-out group-hover:scale-105 group-hover:brightness-105"
                       autoPlay
@@ -264,7 +263,7 @@ export default function HomePage({ startBooking }: HomePageProps) {
                       playsInline
                     >
                       <source src={video.src} type="video/mp4" />
-                      Your browser does not support the video tag.
+                      Your browser does not support video tag.
                     </video>
                     
                     {/* Gradient Overlay */}
