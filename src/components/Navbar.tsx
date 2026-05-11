@@ -49,9 +49,11 @@ export default function Navbar({ currentPage, navigate }: NavbarProps) {
             className="flex items-center gap-3 cursor-pointer group"
             onClick={() => { navigate("home"); setIsMobileOpen(false); }}
           >
-            <div className="w-10 h-10 rounded-xl bg-accent flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
-              <span className="font-display font-black text-white text-sm">W</span>
-            </div>
+            <img 
+              src="/images/logo.png" 
+              alt="Wolio Hills Logo" 
+              className="w-10 h-10 object-contain group-hover:scale-110 transition-transform duration-300"
+            />
             <div className="hidden sm:flex flex-col">
               <span className="font-display font-bold text-white text-lg leading-none tracking-wide">Wolio Hills</span>
               <span className="text-[9px] font-bold text-white tracking-[0.3em] uppercase">Malino</span>
@@ -111,9 +113,13 @@ export default function Navbar({ currentPage, navigate }: NavbarProps) {
               <motion.div
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
-                className="w-20 h-20 rounded-2xl bg-accent flex items-center justify-center shadow-2xl mb-6"
+                className="w-20 h-20 flex items-center justify-center shadow-2xl mb-6"
               >
-                <span className="font-display font-black text-white text-3xl">L</span>
+                <img 
+                  src="/images/logo.png" 
+                  alt="Wolio Hills Logo" 
+                  className="w-full h-full object-contain"
+                />
               </motion.div>
 
               {navLinks.map((link, i) => (

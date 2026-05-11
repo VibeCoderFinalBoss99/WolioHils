@@ -4,12 +4,25 @@ import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import FloatingButtons from "./components/FloatingButtons";
 import HomePage from "./pages/HomePage";
-import AboutPage from "./pages/AboutPage";
+import AboutPage from "./pages/AboutPage.tsx";
 import BookingFormPage from "./pages/BookingFormPage";
 import PaymentPage from "./pages/PaymentPage";
+import PaymentSuccessPage from "./pages/PaymentSuccessPage";
+import PaymentFailurePage from "./pages/PaymentFailurePage";
 import ContactPage from "./pages/ContactPage";
+import AdminLoginPage from "./pages/AdminLoginPage";
+import AdminDashboard from "./pages/AdminDashboard";
 
-export type PageName = "home" | "about" | "book" | "payment" | "contact";
+export type PageName =
+  | "home"
+  | "about"
+  | "book"
+  | "payment"
+  | "payment-success"
+  | "payment-failed"
+  | "contact"
+  | "admin-login"
+  | "admin-dashboard";
 
 export interface BookingData {
   propertyId: number | null;
@@ -44,32 +57,80 @@ const emptyBooking: BookingData = {
 export default function App() {
   const [currentPage, setCurrentPage] = useState<PageName>("home");
   const [bookingData, setBookingData] = useState<BookingData>(emptyBooking);
+  const [isAdminAuthenticated, setIsAdminAuthenticated] = useState(false);
 
   const navigate = (page: PageName) => {
-    setCurrentPage(page);
+    // Check if trying to access admin dashboard without authentication
+    if (page === "admin-dashboard" && !isAdminAuthenticated) {
+      setCurrentPage("admin-login");
+    } else {
+      setCurrentPage(page);
+    }
     window.scrollTo({ top: 0, behavior: "smooth" });
     window.history.replaceState(null, "", `#${page}`);
   };
 
   useEffect(() => {
     const hash = window.location.hash.replace("#", "") as PageName;
-    const validPages: PageName[] = ["home", "about", "book", "payment", "contact"];
+    const validPages: PageName[] = [
+      "home",
+      "about",
+      "book",
+      "payment",
+      "payment-success",
+      "payment-failed",
+      "contact",
+      "admin-login",
+      "admin-dashboard",
+    ];
     if (validPages.includes(hash)) {
-      setCurrentPage(hash);
+      // Check if trying to access admin dashboard without authentication
+      if (hash === "admin-dashboard" && !isAdminAuthenticated) {
+        setCurrentPage("admin-login");
+      } else {
+        setCurrentPage(hash);
+      }
     }
-  }, []);
+  }, [isAdminAuthenticated]);
 
   useEffect(() => {
     const handlePopState = () => {
       const hash = window.location.hash.replace("#", "") as PageName;
-      const validPages: PageName[] = ["home", "about", "book", "payment", "contact"];
+      const validPages: PageName[] = [
+      "home",
+      "about",
+      "book",
+      "payment",
+      "payment-success",
+      "payment-failed",
+      "contact",
+      "admin-login",
+      "admin-dashboard",
+    ];
       if (validPages.includes(hash)) {
-        setCurrentPage(hash);
+        // Check if trying to access admin dashboard without authentication
+        if (hash === "admin-dashboard" && !isAdminAuthenticated) {
+          setCurrentPage("admin-login");
+        } else {
+          setCurrentPage(hash);
+        }
       }
     };
     window.addEventListener("popstate", handlePopState);
     return () => window.removeEventListener("popstate", handlePopState);
-  }, []);
+  }, [isAdminAuthenticated]);
+
+  const handleAdminLogin = (success: boolean) => {
+    if (success) {
+      setIsAdminAuthenticated(true);
+      navigate("admin-dashboard");
+    }
+  };
+
+  const handleAdminLogout = () => {
+    setIsAdminAuthenticated(false);
+    navigate("home");
+  };
 
   const startBooking = (propertyId?: number, propertyName?: string, price?: number, image?: string) => {
     setBookingData({
@@ -83,6 +144,7 @@ export default function App() {
   };
 
   const proceedToPayment = (data: BookingData) => {
+    sessionStorage.setItem("wolio_pay_session", String(Date.now()));
     setBookingData(data);
     navigate("payment");
   };
@@ -92,13 +154,21 @@ export default function App() {
       case "home":
         return <HomePage navigate={navigate} startBooking={startBooking} />;
       case "about":
-        return <AboutPage navigate={navigate} />;
+        return <AboutPage />;
       case "book":
         return <BookingFormPage bookingData={bookingData} setBookingData={setBookingData} proceedToPayment={proceedToPayment} navigate={navigate} />;
       case "payment":
         return <PaymentPage bookingData={bookingData} navigate={navigate} />;
+      case "payment-success":
+        return <PaymentSuccessPage navigate={navigate} />;
+      case "payment-failed":
+        return <PaymentFailurePage navigate={navigate} />;
       case "contact":
         return <ContactPage navigate={navigate} />;
+      case "admin-login":
+        return <AdminLoginPage onLogin={handleAdminLogin} />;
+      case "admin-dashboard":
+        return <AdminDashboard onLogout={handleAdminLogout} />;
       default:
         return <HomePage navigate={navigate} startBooking={startBooking} />;
     }
@@ -106,8 +176,14 @@ export default function App() {
 
   return (
     <div className="min-h-screen relative">
-      <Navbar currentPage={currentPage} navigate={navigate} />
-      <FloatingButtons />
+      {/* Show Navbar and Footer only for non-admin pages */}
+      {currentPage !== "admin-login" && currentPage !== "admin-dashboard" && (
+        <>
+          <Navbar currentPage={currentPage} navigate={navigate} />
+          <FloatingButtons />
+        </>
+      )}
+      
       <AnimatePresence mode="wait">
         <motion.div
           key={currentPage}
@@ -119,7 +195,11 @@ export default function App() {
           {renderPage()}
         </motion.div>
       </AnimatePresence>
-      <Footer navigate={navigate} />
+      
+      {/* Show Footer only for non-admin pages */}
+      {currentPage !== "admin-login" && currentPage !== "admin-dashboard" && (
+        <Footer navigate={navigate} />
+      )}
     </div>
   );
 }

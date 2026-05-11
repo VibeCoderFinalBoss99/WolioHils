@@ -1,24 +1,7 @@
-import React, { useState, useEffect, useRef } from "react";
+import React from "react";
 import { motion } from "motion/react";
-import { Globe, Users, Award, Sparkles, Shield, Eye, Gem } from "lucide-react";
+import { Sparkles, Shield, Eye, Gem } from "lucide-react";
 import { use3DTilt } from "../hooks/use3DTilt";
-
-function Counter({ target, suffix = "" }: { target: number; suffix?: string }) {
-  const [count, setCount] = useState(0);
-  const ref = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    const obs = new IntersectionObserver(([e]) => {
-      if (e.isIntersecting) {
-        let s = 0; const step = Math.ceil(target / 50);
-        const t = setInterval(() => { s += step; if (s >= target) { setCount(target); clearInterval(t); } else setCount(s); }, 30);
-        obs.disconnect();
-      }
-    }, { threshold: 0.5 });
-    if (ref.current) obs.observe(ref.current);
-    return () => obs.disconnect();
-  }, [target]);
-  return <span ref={ref}>{count.toLocaleString()}{suffix}</span>;
-}
 
 function ValueCard({ icon: Icon, title, desc, delay }: { icon: React.ElementType; title: string; desc: string; delay: number }) {
   const { isHovering, rotateX, rotateY, glareBackground, handleMouseMove, handleMouseLeave, setIsHovering } = use3DTilt();
@@ -86,38 +69,18 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* STATS */}
-      <section className="py-20 px-6 bg-primary-dark relative overflow-hidden">
-        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-accent/30 to-transparent" />
-        <div className="max-w-5xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-8">
-          {[
-            { value: 500, suffix: "+", label: "Properti Unggulan", icon: Globe },
-            { value: 10000, suffix: "+", label: "Tamu Puas", icon: Users },
-            { value: 50, suffix: "+", label: "Destinasi", icon: Globe },
-            { value: 15, suffix: "", label: "Penghargaan", icon: Award },
-          ].map((s, i) => (
-            <motion.div key={i} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.1 }} viewport={{ once: true }} className="text-center">
-              <div className="w-14 h-14 rounded-2xl bg-accent/10 mx-auto mb-4 flex items-center justify-center">
-                <s.icon className="w-6 h-6 text-accent" />
-              </div>
-              <div className="font-display font-bold text-white text-3xl mb-1"><Counter target={s.value} suffix={s.suffix} /></div>
-              <p className="text-white/40 text-xs font-semibold uppercase tracking-widest">{s.label}</p>
-            </motion.div>
-          ))}
-        </div>
-      </section>
-
+      
       {/* VALUES */}
       <section className="py-20 px-6 max-w-7xl mx-auto">
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center mb-16">
           <span className="text-accent font-semibold text-xs uppercase tracking-[0.3em]">Prinsip Kami</span>
-          <h2 className="font-display font-black text-primary text-4xl md:text-5xl mt-3">Nilai-nilai <span className="text-gradient">Inti</span></h2>
+          <h2 className="font-display font-black text-primary text-4xl md:text-5xl mt-3">Yang <span className="text-gradient">Kami Utamakan</span></h2>
         </motion.div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          <ValueCard icon={Sparkles} title="Keunggulan" desc="Kami mengejar kesempurnaan dalam setiap detail, dari pemilihan properti hingga pengalaman tamu." delay={0} />
-          <ValueCard icon={Shield} title="Kepercayaan" desc="Transparansi dan integritas adalah fondasi dari setiap interaksi." delay={0.1} />
-          <ValueCard icon={Eye} title="Perhatian" desc="Setiap tamu menerima perhatian personal yang disesuaikan dengan preferensi unik mereka." delay={0.2} />
-          <ValueCard icon={Gem} title="Kualitas" desc="Hanya properti yang memenuhi standar ketat kami yang masuk ke platform." delay={0.3} />
+          <ValueCard icon={Sparkles} title="Kenyamanan Anda" desc="Kami menjaga privasi dan keamanan Anda sepenuh hati, karena kami percaya setiap tamu berhak dapat menikmati liburan tanpa khawatir." delay={0} />
+          <ValueCard icon={Shield} title="Kenyamanan Bersama" desc="Setiap villa kami jaga kebersihannya dengan standar tinggi, karena kenyamanan bersama adalah fondasi dari pengalaman menginap yang menyenangkan." delay={0.1} />
+          <ValueCard icon={Eye} title="Pelayanan Prima" desc="Tim kami selalu siap membantu kebutuhan Anda selama menginap, dari check-in hingga check-out, karena kebahagiaan Anda adalah prioritas kami." delay={0.2} />
+          <ValueCard icon={Gem} title="Pengalaman Terbaik" desc="Kami berkomitmen memberikan lebih dari yang Anda harapkan, karena setiap momen liburan Anda adalah berharga dan harus istimewa." delay={0.3} />
         </div>
       </section>
 
@@ -130,9 +93,9 @@ export default function AboutPage() {
           </motion.div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
             {[
-              { name: "Alexander Reed", role: "Founder & CEO", initials: "AR" },
-              { name: "Sofia Martinez", role: "Head of Curation", initials: "SM" },
-              { name: "James Chen", role: "CTO", initials: "JC" },
+              { name: "Budi Santoso", role: "Founder & CEO", initials: "BS" },
+              { name: "Siti Nurhaliza", role: "Head of Hospitality", initials: "SN" },
+              { name: "Ahmad Wijaya", role: "Property Manager", initials: "AW" },
             ].map((member, i) => (
               <motion.div key={i} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.1 }} viewport={{ once: true }} className="bg-white p-8 rounded-3xl shadow-deep gold-border text-center group">
                 <div className="w-20 h-20 rounded-full bg-primary mx-auto mb-5 flex items-center justify-center group-hover:bg-accent transition-colors duration-300">

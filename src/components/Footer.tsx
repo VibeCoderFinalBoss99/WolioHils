@@ -88,11 +88,22 @@ export default function Footer({ navigate }: FooterProps) {
             transition={{ delay: 0.2 }}
           >
             <h4 className="font-display font-bold text-white text-sm uppercase tracking-widest mb-6 flex items-center gap-2">
-              <span className="w-8 h-[2px] bg-accent" /> Layanan
+              <span className="w-8 h-[2px] bg-accent" /> Social Media
             </h4>
             <ul className="space-y-3 text-white/50 text-sm">
-              {["Villa Mewah", "Hotel Butik", "Apartemen Kota", "Rumah Pantai", "Retret Pegunungan", "Pulau Pribadi"].map((s) => (
-                <li key={s} className="hover:text-accent transition-colors cursor-default">{s}</li>
+              {[
+                { name: "Instagram", link: "#" },
+                { name: "Facebook", link: "#" },
+                { name: "Twitter", link: "#" },
+                { name: "YouTube", link: "#" },
+                { name: "LinkedIn", link: "#" },
+                { name: "TikTok", link: "#" }
+              ].map((social) => (
+                <li key={social.name} className="hover:text-accent transition-colors cursor-default">
+                  <a href={social.link}>
+                    {social.name}
+                  </a>
+                </li>
               ))}
             </ul>
           </motion.div>
@@ -144,6 +155,12 @@ export default function Footer({ navigate }: FooterProps) {
             <span className="hover:text-accent transition-colors cursor-pointer">Privasi</span>
             <span className="hover:text-accent transition-colors cursor-pointer">Syarat</span>
             <span className="hover:text-accent transition-colors cursor-pointer">Peta Situs</span>
+            <button
+              onClick={() => navigate("admin-login")}
+              className="text-white/30 hover:text-accent text-xs capitalize tracking-wide transition-colors cursor-pointer"
+            >
+              Admin Login
+            </button>
           </div>
         </div>
       </div>

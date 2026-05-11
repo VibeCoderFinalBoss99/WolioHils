@@ -168,8 +168,8 @@ export default function HomePage({ startBooking }: HomePageProps) {
                 whileHover={{ scale: 1.05, y: -5 }}
                 className="group"
               >
-                <div className="text-4xl md:text-5xl font-black text-primary mb-2 group-hover:text-accent transition-colors duration-300">1</div>
-                <p className="text-primary/80 text-sm font-medium group-hover:text-primary transition-colors duration-300">Pengalaman Terbaik</p>
+                <div className="text-4xl md:text-5xl font-black text-primary mb-2 group-hover:text-accent transition-colors duration-300">10+</div>
+                <p className="text-primary/80 text-sm font-medium group-hover:text-primary transition-colors duration-300">Pengalaman Mewah</p>
               </motion.div>
               <motion.div 
                 whileHover={{ scale: 1.05, y: -5 }}
@@ -203,8 +203,8 @@ export default function HomePage({ startBooking }: HomePageProps) {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             <FeatureCard icon={Shield} title="Properti Terverifikasi" desc="Setiap properti diperiksa dan diverifikasi secara personal oleh tim kualitas Wolio Hills." delay={0} />
             <FeatureCard icon={Clock} title="Pesan Instan" desc="Pesan menginap sempurna kamu dalam hitungan detik dengan sistem yang Wolio Hills rancang." delay={0.1} />
-            <FeatureCard icon={Headphones} title="Support 24/7" desc="Tim concierge Wolio Hills yang berdedikasi siap membantu kapan saja kamu butuhkan." delay={0.2} />
-            <FeatureCard icon={Star} title="Harga Terbaik" desc="Wolio Hills jamin harga terbaik. Temukan lebih murah dan kami akan samakan harganya." delay={0.3} />
+            <FeatureCard icon={Headphones} title="Support 24/7" desc="Kami siap membantu kapan saja kamu butuhkan." delay={0.2} />
+            <FeatureCard icon={Star} title="Harga Terbaik" desc="Wolio Hills jamin harga terbaik. Dengan Kualitas dan Pengalaman yang tentunya sesuai." delay={0.3} />
           </div>
         </motion.div>
       </section>
@@ -238,7 +238,10 @@ export default function HomePage({ startBooking }: HomePageProps) {
           </motion.div>
           
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-6">
-            {videos.map((video, index) => (
+            {videos.map((video, index) => {
+              const isLastVideo = index === videos.length - 1;
+              const isSecondRow = index === 2 || index === 3; // Videos 3 and 4 (second row)
+              return (
               <motion.div
                 key={video.id}
                 initial={{ opacity: 0, y: 30, scale: 0.9 }}
@@ -252,7 +255,7 @@ export default function HomePage({ startBooking }: HomePageProps) {
                   scale: 1.05,
                   transition: { duration: 0.3, ease: [0.25, 0.46, 0.45, 0.94] }
                 }}
-                className="group cursor-pointer"
+                className={`group cursor-pointer ${isLastVideo ? 'lg:col-span-1 xl:col-span-1 col-span-2 flex justify-center' : isSecondRow ? 'max-w-sm mx-auto lg:max-w-none xl:max-w-none' : ''}`}
               >
                 <div className="relative overflow-hidden shadow-lg bg-white rounded-xl md:rounded-2xl hover:shadow-xl transition-all duration-300 h-full">
                   {/* Video Container */}
@@ -277,7 +280,7 @@ export default function HomePage({ startBooking }: HomePageProps) {
                     
                     {/* Shimmer Effect */}
                     <motion.div 
-                      className="absolute inset-0 bg-gradient-to-r from-transparent via-white/15 to-transparent opacity-0 -skew-x-12"
+                      className={`absolute inset-0 bg-gradient-to-r from-transparent via-white/15 to-transparent opacity-0 -skew-x-12 ${isLastVideo ? 'left-1/2 -translate-x-1/2 lg:left-auto lg:translate-x-0 xl:left-auto xl:translate-x-0' : ''}`}
                       whileHover={{ 
                         opacity: [0, 0.8, 0],
                         x: ["-100%", "100%"]
@@ -287,7 +290,7 @@ export default function HomePage({ startBooking }: HomePageProps) {
                     
                     {/* Pulse Ring Animation */}
                     <motion.div
-                      className="absolute inset-0 rounded-xl md:rounded-2xl border border-accent/20"
+                      className={`absolute inset-0 rounded-xl md:rounded-2xl border border-accent/20 ${isLastVideo ? 'left-1/2 -translate-x-1/2 lg:left-auto lg:translate-x-0 xl:left-auto xl:translate-x-0' : ''}`}
                       animate={{
                         scale: [1, 1.03, 1],
                         opacity: [0, 0.2, 0],
@@ -326,7 +329,8 @@ export default function HomePage({ startBooking }: HomePageProps) {
                   </motion.div>
                 </div>
               </motion.div>
-            ))}
+              );
+            })}
           </div>
         </motion.div>
       </section>

@@ -1,188 +1,261 @@
-import React, { useState } from "react";
-import { motion, AnimatePresence } from "motion/react";
-import { CreditCard, Building2, Smartphone, Check, Lock, ChevronLeft, PartyPopper, ArrowRight, ShieldCheck } from "lucide-react";
-import { PROPERTIES } from "../data/properties";
+import { useEffect, useRef, useState } from "react";
+import { motion } from "motion/react";
+import { Lock, ChevronLeft, Loader2 } from "lucide-react";
 import type { PageName, BookingData } from "../App";
+import { calculateFees, calculateStaySubtotal } from "../lib/pricing";
+import { createSnapToken, loadMidtransSnap } from "../lib/midtrans";
+import type { PaymentSuccessPayload } from "./PaymentSuccessPage";
+import type { PaymentFailurePayload } from "./PaymentFailurePage";
 
 interface Props {
   bookingData: BookingData;
   navigate: (page: PageName) => void;
 }
 
-type PaymentMethod = "card" | "bank" | "ewallet";
+const SUCCESS_KEY = "wolio_payment_success";
+const FAIL_KEY = "wolio_payment_failed";
+
+function clearSnapSessionLock() {
+  const session = sessionStorage.getItem("wolio_pay_session");
+  if (session) sessionStorage.removeItem(`wolio_snap_opened_${session}`);
+}
 
 export default function PaymentPage({ bookingData, navigate }: Props) {
-  const [method, setMethod] = useState<PaymentMethod>("card");
-  const [processing, setProcessing] = useState(false);
-  const [success, setSuccess] = useState(false);
-  const [cardNumber, setCardNumber] = useState("");
-  const [cardExpiry, setCardExpiry] = useState("");
-  const [cardCvv, setCardCvv] = useState("");
-  const [cardName, setCardName] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const orderIdRef = useRef(`WOLIO-${Date.now()}`);
+  const payStarted = useRef(false);
+  const payFinished = useRef(false);
+  const bookingRef = useRef(bookingData);
+  const navigateRef = useRef(navigate);
+  bookingRef.current = bookingData;
+  navigateRef.current = navigate;
 
-  const selectedProp = PROPERTIES.find(p => p.id === bookingData.propertyId);
-  const nights = bookingData.checkIn && bookingData.checkOut ? Math.max(1, Math.ceil((new Date(bookingData.checkOut).getTime() - new Date(bookingData.checkIn).getTime()) / 86400000)) : 1;
-  const subtotal = (selectedProp?.price || bookingData.propertyPrice || 200) * nights * bookingData.rooms;
-  const fee = Math.round(subtotal * 0.05);
-  const total = subtotal + fee;
+  const subtotal = calculateStaySubtotal({ ...bookingData, rooms: 1 });
+  const { fee, total } = calculateFees(subtotal);
+  const grossAmount = Math.round(total);
 
-  const handlePay = () => {
-    setProcessing(true);
-    setTimeout(() => { setProcessing(false); setSuccess(true); }, 2500);
+  const clientKey = import.meta.env.VITE_MIDTRANS_CLIENT_KEY || "";
+  const isProduction = import.meta.env.VITE_MIDTRANS_PRODUCTION === "true";
+
+  useEffect(() => {
+    const session = sessionStorage.getItem("wolio_pay_session");
+    const lockKey = session ? `wolio_snap_opened_${session}` : "";
+
+    const fail = (msg: string, orderId?: string) => {
+      if (payFinished.current) return;
+      payFinished.current = true;
+      clearSnapSessionLock();
+      const pl: PaymentFailurePayload = { message: msg, order_id: orderId };
+      sessionStorage.setItem(FAIL_KEY, JSON.stringify(pl));
+      navigateRef.current("payment-failed");
+    };
+
+    const success = (result: Record<string, string>, bd: BookingData, gross: number) => {
+      if (payFinished.current) return;
+      payFinished.current = true;
+      clearSnapSessionLock();
+      const pl: PaymentSuccessPayload = {
+        order_id: result.order_id || orderIdRef.current,
+        transaction_id: result.transaction_id,
+        payment_type: result.payment_type,
+        transaction_status: result.transaction_status,
+        gross_amount: String(gross),
+        guestName: bd.guestName,
+        guestEmail: bd.guestEmail,
+        guestPhone: bd.guestPhone,
+        checkIn: bd.checkIn,
+        checkOut: bd.checkOut,
+        propertyName: bd.propertyName || "Wolio Hills Malino",
+      };
+      sessionStorage.setItem(SUCCESS_KEY, JSON.stringify(pl));
+      navigateRef.current("payment-success");
+    };
+
+    const run = async () => {
+      const bd = bookingRef.current;
+      const gross = Math.round(calculateFees(calculateStaySubtotal({ ...bd, rooms: 1 })).total);
+
+      if (!bd.checkIn || !bd.checkOut) {
+        setLoading(false);
+        setError("Data booking belum lengkap. Kembali ke halaman booking.");
+        return;
+      }
+      if (!clientKey) {
+        setLoading(false);
+        setError("VITE_MIDTRANS_CLIENT_KEY belum diatur di .env");
+        return;
+      }
+      if (!session || !lockKey) {
+        setLoading(false);
+        setError("Sesi pembayaran tidak valid. Gunakan tombol “Lanjut ke Pembayaran” dari halaman booking.");
+        return;
+      }
+
+      if (payStarted.current) return;
+      if (sessionStorage.getItem(lockKey)) return;
+
+      sessionStorage.setItem(lockKey, "1");
+      payStarted.current = true;
+      setLoading(true);
+      setError(null);
+
+      try {
+        await loadMidtransSnap(clientKey, isProduction);
+        const token = await createSnapToken({
+          orderId: orderIdRef.current,
+          grossAmount: gross,
+          booking: bd,
+          itemName: `${bd.propertyName || "Wolio Hills Malino"} — ${bd.checkIn} s/d ${bd.checkOut}`,
+        });
+
+        if (!window.snap?.pay) {
+          throw new Error("Midtrans Snap tidak tersedia");
+        }
+
+        setLoading(false);
+
+        window.snap.pay(token, {
+          onSuccess: (result) => {
+            success(result, bd, gross);
+          },
+          onPending: (result) => {
+            success(result, bd, gross);
+          },
+          onError: (result) => {
+            const msg = result.status_message || "Pembayaran gagal";
+            fail(msg, result.order_id || orderIdRef.current);
+          },
+          onClose: () => {
+            if (payFinished.current) return;
+            setError("Popup Midtrans ditutup sebelum pembayaran selesai. Tekan tombol di bawah untuk coba lagi.");
+            sessionStorage.removeItem(lockKey);
+            payStarted.current = false;
+          },
+        });
+      } catch (e) {
+        payStarted.current = false;
+        sessionStorage.removeItem(lockKey);
+        setLoading(false);
+        setError(e instanceof Error ? e.message : "Terjadi kesalahan");
+      }
+    };
+
+    void run();
+
+    return () => {
+      if (!payFinished.current && lockKey) {
+        sessionStorage.removeItem(lockKey);
+      }
+      payStarted.current = false;
+    };
+  }, []);
+
+  const nights =
+    bookingData.checkIn && bookingData.checkOut
+      ? Math.max(1, Math.ceil((new Date(bookingData.checkOut).getTime() - new Date(bookingData.checkIn).getTime()) / 86400000))
+      : 0;
+
+  const retry = () => {
+    clearSnapSessionLock();
+    payStarted.current = false;
+    sessionStorage.setItem("wolio_pay_session", String(Date.now()));
+    orderIdRef.current = `WOLIO-${Date.now()}`;
+    setError(null);
+    setLoading(true);
+    window.location.reload();
   };
-
-  const inputClass = "w-full bg-surface border border-surface-dark rounded-xl px-4 py-3 text-sm text-text focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent/30 transition-all";
-
-  const methods: { id: PaymentMethod; icon: React.ElementType; name: string; desc: string }[] = [
-    { id: "card", icon: CreditCard, name: "Kartu Kredit/Debit", desc: "Visa, Mastercard, AMEX" },
-    { id: "bank", icon: Building2, name: "Transfer Bank", desc: "BCA, Mandiri, BNI, BRI" },
-    { id: "ewallet", icon: Smartphone, name: "E-Wallet", desc: "GoPay, OVO, DANA, ShopeePay" },
-  ];
-
-  if (success) {
-    return (
-      <>
-        <section className="relative pt-40 pb-24 px-6 hero-gradient overflow-hidden min-h-screen flex items-center">
-          <motion.div animate={{ scale: [1, 1.3, 1] }} transition={{ duration: 8, repeat: Infinity }} className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-accent/5 rounded-full blur-[150px]" />
-          <div className="max-w-lg mx-auto text-center relative z-10">
-            <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: "spring", damping: 15 }} className="w-24 h-24 rounded-full bg-success mx-auto mb-8 flex items-center justify-center shadow-[0_20px_60px_rgba(56,161,105,0.4)]">
-              <Check className="w-12 h-12 text-white" />
-            </motion.div>
-            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
-              <PartyPopper className="w-8 h-8 text-accent mx-auto mb-4" />
-              <h1 className="font-display font-black text-white text-4xl md:text-5xl mb-4">Pembayaran <span className="text-gradient">Berhasil!</span></h1>
-              <p className="text-white/60 text-lg mb-3">Booking kamu udah dikonfirmasi.</p>
-              <p className="text-white/40 text-sm mb-8">Kode booking: <span className="text-accent font-bold">LXS-{Date.now().toString().slice(-8)}</span></p>
-              <div className="bg-white/5 backdrop-blur-sm border border-white/10 p-6 rounded-2xl mb-8 text-left space-y-2">
-                <div className="flex justify-between text-sm"><span className="text-white/50">Properti</span><span className="text-white font-semibold">{bookingData.propertyName || selectedProp?.name || "Wolio Hills Malino"}</span></div>
-                <div className="flex justify-between text-sm"><span className="text-white/50">Tamu</span><span className="text-white font-semibold">{bookingData.guestName}</span></div>
-                <div className="flex justify-between text-sm"><span className="text-white/50">Tanggal</span><span className="text-white font-semibold">{bookingData.checkIn} → {bookingData.checkOut}</span></div>
-                <div className="flex justify-between text-sm border-t border-white/10 pt-2 mt-2"><span className="text-white/50">Total Dibayar</span><span className="text-accent font-bold text-lg">Rp {total.toLocaleString()}</span></div>
-              </div>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} onClick={() => navigate("home")} className="bg-accent hover:bg-accent-light text-primary font-bold text-sm tracking-wider uppercase px-8 py-3.5 rounded-full shadow-lg cursor-pointer transition-colors flex items-center gap-2 justify-center">
-                  Kembali ke Beranda <ArrowRight className="w-4 h-4" />
-                </motion.button>
-                <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} onClick={() => navigate("about")} className="text-white/70 hover:text-white font-semibold text-sm tracking-wider uppercase px-8 py-3.5 rounded-full border border-white/20 hover:border-white/40 cursor-pointer transition-all">
-                  Lihat Tentang Kami
-                </motion.button>
-              </div>
-            </motion.div>
-          </div>
-        </section>
-      </>
-    );
-  }
 
   return (
     <>
       <section className="relative pt-40 pb-24 px-6 hero-gradient overflow-hidden">
         <motion.div animate={{ scale: [1, 1.2, 1] }} transition={{ duration: 12, repeat: Infinity }} className="absolute top-1/4 left-1/4 w-[500px] h-[500px] bg-accent/5 rounded-full blur-[120px]" />
         <div className="max-w-4xl mx-auto text-center relative z-10">
-          <motion.span initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-accent font-semibold text-xs uppercase tracking-[0.3em]">Pembayaran Aman</motion.span>
-          <motion.h1 initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="font-display font-black text-white text-5xl md:text-7xl leading-[0.9] mt-3 mb-6">Lanjutin <span className="text-gradient">Pembayaran</span></motion.h1>
+          <motion.span initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-accent font-semibold text-xs uppercase tracking-[0.3em]">
+            Pembayaran Midtrans
+          </motion.span>
+          <motion.h1 initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="font-display font-black text-white text-5xl md:text-7xl leading-[0.9] mt-3 mb-6">
+            Selesaikan <span className="text-gradient">Pembayaran</span>
+          </motion.h1>
+          <p className="text-white/55 text-sm max-w-xl mx-auto">Popup Midtrans akan terbuka otomatis. Jika tidak muncul, periksa popup blocker atau tekan coba lagi.</p>
         </div>
-        <div className="absolute bottom-0 left-0 w-full"><svg viewBox="0 0 1440 120" fill="none" className="w-full"><path d="M0,80 C360,120 1080,40 1440,80 L1440,120 L0,120 Z" fill="var(--color-surface)" /></svg></div>
+        <div className="absolute bottom-0 left-0 w-full">
+          <svg viewBox="0 0 1440 120" fill="none" className="w-full">
+            <path d="M0,80 C360,120 1080,40 1440,80 L1440,120 L0,120 Z" fill="var(--color-surface)" />
+          </svg>
+        </div>
       </section>
 
-      <section className="py-12 px-6 max-w-5xl mx-auto">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Payment Methods + Form */}
-          <div className="lg:col-span-2 space-y-6">
-            {/* Method Selection */}
-            <div className="bg-white p-6 rounded-3xl shadow-deep gold-border">
-              <h3 className="font-display font-bold text-primary text-lg mb-5">Metode Pembayaran</h3>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                {methods.map(m => (
-                  <button key={m.id} onClick={() => setMethod(m.id)} className={`p-4 rounded-2xl border-2 text-left transition-all cursor-pointer ${method === m.id ? "border-accent bg-accent/5 shadow-lg" : "border-surface-dark hover:border-accent/30"}`}>
-                    <m.icon className={`w-6 h-6 mb-2 ${method === m.id ? "text-accent" : "text-text-light"}`} />
-                    <h4 className="font-semibold text-sm text-primary">{m.name}</h4>
-                    <p className="text-[10px] text-text-light mt-0.5">{m.desc}</p>
-                  </button>
-                ))}
-              </div>
+      <section className="py-12 px-6 max-w-3xl mx-auto">
+        <div className="bg-white p-6 md:p-8 rounded-3xl shadow-deep gold-border">
+          <h3 className="font-display font-bold text-primary text-lg mb-5">Detail Booking</h3>
+          <div className="space-y-3 text-sm border-b border-surface-dark pb-6 mb-6">
+            <div className="flex justify-between gap-4">
+              <span className="text-text-light">Nama tamu</span>
+              <span className="font-semibold text-primary text-right">{bookingData.guestName || "—"}</span>
             </div>
-
-            {/* Form Area */}
-            <AnimatePresence mode="wait">
-              {method === "card" && (
-                <motion.div key="card" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="bg-white p-6 rounded-3xl shadow-deep gold-border">
-                  <h3 className="font-display font-bold text-primary text-lg mb-5">Detail Kartu</h3>
-                  <div className="space-y-4">
-                    <div><label className="text-xs font-semibold uppercase tracking-widest text-text-light mb-2 block">Nama Pemegang Kartu</label><input type="text" value={cardName} onChange={e => setCardName(e.target.value)} placeholder="Nama kamu" className={inputClass} /></div>
-                    <div><label className="text-xs font-semibold uppercase tracking-widest text-text-light mb-2 block">Nomor Kartu</label><input type="text" value={cardNumber} onChange={e => setCardNumber(e.target.value.replace(/\D/g, "").replace(/(.{4})/g, "$1 ").trim().slice(0, 19))} placeholder="4242 4242 4242 4242" maxLength={19} className={inputClass} /></div>
-                    <div className="grid grid-cols-2 gap-4">
-                      <div><label className="text-xs font-semibold uppercase tracking-widest text-text-light mb-2 block">Kadaluarsa</label><input type="text" value={cardExpiry} onChange={e => setCardExpiry(e.target.value)} placeholder="MM/YY" maxLength={5} className={inputClass} /></div>
-                      <div><label className="text-xs font-semibold uppercase tracking-widest text-text-light mb-2 block">CVV</label><input type="password" value={cardCvv} onChange={e => setCardCvv(e.target.value)} placeholder="•••" maxLength={4} className={inputClass} /></div>
-                    </div>
-                  </div>
-                </motion.div>
-              )}
-              {method === "bank" && (
-                <motion.div key="bank" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="bg-white p-6 rounded-3xl shadow-deep gold-border">
-                  <h3 className="font-display font-bold text-primary text-lg mb-5">Transfer Bank</h3>
-                  <p className="text-text-light text-sm mb-4">Pilih bank kamu dan selesaikan transfer dalam 24 jam.</p>
-                  <div className="grid grid-cols-2 gap-3">
-                    {["BCA", "Mandiri", "BNI", "BRI"].map(bank => (
-                      <div key={bank} className="p-4 rounded-xl border border-surface-dark hover:border-accent/30 text-center cursor-pointer transition-all hover:bg-accent/5">
-                        <span className="font-bold text-primary text-lg">{bank}</span>
-                        <p className="text-[10px] text-text-light mt-1">Virtual Account</p>
-                      </div>
-                    ))}
-                  </div>
-                </motion.div>
-              )}
-              {method === "ewallet" && (
-                <motion.div key="ewallet" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="bg-white p-6 rounded-3xl shadow-deep gold-border">
-                  <h3 className="font-display font-bold text-primary text-lg mb-5">E-Wallet</h3>
-                  <p className="text-text-light text-sm mb-4">Choose your preferred e-wallet to complete payment.</p>
-                  <div className="grid grid-cols-2 gap-3">
-                    {["GoPay", "OVO", "DANA", "ShopeePay"].map(wallet => (
-                      <div key={wallet} className="p-4 rounded-xl border border-surface-dark hover:border-accent/30 text-center cursor-pointer transition-all hover:bg-accent/5">
-                        <span className="font-bold text-primary">{wallet}</span>
-                      </div>
-                    ))}
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-
-            <div className="flex items-center gap-2 text-text-light text-xs"><Lock className="w-3.5 h-3.5" /> Pembayaran kamu aman dan terenkripsi</div>
+            <div className="flex justify-between gap-4">
+              <span className="text-text-light">Email</span>
+              <span className="font-semibold text-primary text-right break-all">{bookingData.guestEmail || "—"}</span>
+            </div>
+            <div className="flex justify-between gap-4">
+              <span className="text-text-light">WhatsApp</span>
+              <span className="font-semibold text-primary text-right">{bookingData.guestPhone || "—"}</span>
+            </div>
+            <div className="flex justify-between gap-4">
+              <span className="text-text-light">Check-in</span>
+              <span className="font-semibold text-primary">{bookingData.checkIn || "—"}</span>
+            </div>
+            <div className="flex justify-between gap-4">
+              <span className="text-text-light">Check-out</span>
+              <span className="font-semibold text-primary">{bookingData.checkOut || "—"}</span>
+            </div>
+            <div className="flex justify-between gap-4">
+              <span className="text-text-light">Jumlah tamu</span>
+              <span className="font-semibold text-primary">{bookingData.guests} orang</span>
+            </div>
           </div>
 
-          {/* Order Summary Sidebar */}
-          <div>
-            <div className="bg-white p-6 rounded-3xl shadow-deep gold-border sticky top-28">
-              <h3 className="font-display font-bold text-primary text-lg mb-5">Ringkasan Pesanan</h3>
-              {(bookingData.propertyImage || selectedProp?.image) && (
-                <div className="rounded-2xl overflow-hidden mb-4">
-                  <img src={bookingData.propertyImage || selectedProp?.image} alt="" className="w-full h-36 object-cover" />
-                </div>
-              )}
-              <h4 className="font-display font-bold text-primary text-lg">{bookingData.propertyName || "Wolio Hills Malino"}</h4>
-              <p className="text-text-light text-sm">Rp {bookingData.propertyPrice || 2000000}/malam</p>
-              <p className="text-text-light text-xs mb-4">{bookingData.checkIn} → {bookingData.checkOut}</p>
-              <div className="space-y-2 text-sm border-t border-surface-dark pt-4">
-                <div className="flex justify-between"><span className="text-text-light">{nights} malam × {bookingData.rooms} kamar</span><span className="font-semibold text-primary">Rp {subtotal.toLocaleString()}</span></div>
-                <div className="flex justify-between"><span className="text-text-light">Biaya layanan</span><span className="font-semibold text-primary">Rp {fee.toLocaleString()}</span></div>
-                <div className="flex justify-between font-display font-bold text-xl text-primary pt-3 border-t border-surface-dark"><span>Total</span><span className="text-gradient">Rp {total.toLocaleString()}</span></div>
+          <h3 className="font-display font-bold text-primary text-lg mb-4">Ringkasan</h3>
+          <div className="space-y-2 text-sm">
+            <div className="flex justify-between gap-4">
+              <span className="text-text-light">
+                Tarif flat (tamu)
+                {nights > 0 ? (
+                  <span className="block text-[11px] text-text-light/80 mt-0.5">{nights} malam — tidak mempengaruhi total</span>
+                ) : null}
+              </span>
+              <span className="font-semibold text-primary shrink-0">Rp {subtotal.toLocaleString("id-ID")}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-text-light">Biaya layanan</span>
+              <span className="font-semibold text-primary">Rp {fee.toLocaleString("id-ID")}</span>
+            </div>
+            <div className="flex justify-between font-display font-bold text-xl text-primary pt-3 border-t border-surface-dark">
+              <span>Total</span>
+              <span className="text-gradient">Rp {grossAmount.toLocaleString("id-ID")}</span>
+            </div>
+          </div>
+
+          <div className="mt-8 flex flex-col items-center gap-4">
+            {loading && (
+              <div className="flex items-center gap-2 text-text-light text-sm">
+                <Loader2 className="w-5 h-5 animate-spin text-accent" />
+                Menyiapkan Midtrans…
               </div>
-              <motion.button
-                whileHover={{ scale: processing ? 1 : 1.02 }}
-                whileTap={{ scale: processing ? 1 : 0.98 }}
-                onClick={handlePay}
-                disabled={processing}
-                className={`w-full mt-6 font-bold text-sm tracking-wider uppercase py-4 rounded-full shadow-lg flex items-center justify-center gap-2 cursor-pointer transition-all ${processing ? "bg-text-light text-white" : "bg-accent hover:bg-accent-light text-primary shadow-[0_15px_40px_rgba(201,168,76,0.3)]"}`}
-              >
-                {processing ? (
-                  <><motion.div animate={{ rotate: 360 }} transition={{ duration: 1, repeat: Infinity, ease: "linear" }} className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full" /> Memproses...</>
-                ) : (
-                  <><ShieldCheck className="w-4 h-4" /> Bayar Sekarang Rp {total.toLocaleString()}</>
-                )}
+            )}
+            {error && (
+              <div className="w-full rounded-2xl bg-red-50 border border-red-200 text-red-800 text-sm px-4 py-3 text-center">
+                {error}
+              </div>
+            )}
+            {error && (
+              <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} onClick={retry} className="bg-accent hover:bg-accent-light text-primary font-bold text-sm tracking-wider uppercase px-8 py-3.5 rounded-full shadow-lg cursor-pointer transition-colors">
+                Coba lagi
               </motion.button>
-              <div className="flex items-center justify-center gap-2 mt-4 text-text-light text-[10px]">
-                <Lock className="w-3 h-3" /> Pembayaran Aman & Terenkripsi
-              </div>
+            )}
+            <div className="flex items-center gap-2 text-text-light text-xs">
+              <Lock className="w-3.5 h-3.5" /> Pembayaran diproses oleh Midtrans (Snap)
             </div>
           </div>
         </div>
