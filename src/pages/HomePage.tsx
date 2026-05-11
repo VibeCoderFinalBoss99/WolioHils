@@ -53,11 +53,6 @@ export default function HomePage({ startBooking }: HomePageProps) {
     { id: 5, src: '/videos/overview.mp4', title: 'Villa Panorama', desc: 'Panorama lengkap villa dengan latar pegunungan dan perkebunan yang indah, pemandangan eksklusif Wolio Hills.' }
   ];
 
-  // Debug: Check if videos are loaded
-  React.useEffect(() => {
-    console.log('Videos loaded:', videos);
-    console.log('Videos folder path:', '/videos/');
-  }, []);
 
   // Scroll animations
   const statsOpacity = useTransform(scrollY, [0, 300], [0, 1]);
@@ -237,10 +232,13 @@ export default function HomePage({ startBooking }: HomePageProps) {
             <p className="text-text-light text-lg mt-4 max-w-2xl mx-auto">Lihat langsung keindahan dan fasilitas Wolio Hills Malino melalui video-video eksklusif kami.</p>
           </motion.div>
 
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-6">
+          {/*
+            Video grid: <lg = 2 kolom (baris akhir kartu ke-5 col-span-2, isi dibatasi max-width agar tidak besar).
+            lg+ = 5 kolom sejajar — jarak antar kartu hanya gap grid (kecil), tanpa kartu penuh lebar layar.
+          */}
+          <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-5 lg:gap-3 xl:gap-4 auto-rows-auto">
             {videos.map((video, index) => {
               const isLastVideo = index === videos.length - 1;
-              const isSecondRow = index === 2 || index === 3; // Videos 3 and 4 (second row)
               return (
                 <motion.div
                   key={video.id}
@@ -252,12 +250,16 @@ export default function HomePage({ startBooking }: HomePageProps) {
                     ease: [0.25, 0.46, 0.45, 0.94]
                   }}
                   whileHover={{
-                    scale: 1.05,
+                    scale: 1.02,
                     transition: { duration: 0.3, ease: [0.25, 0.46, 0.45, 0.94] }
                   }}
-                  className={`group cursor-pointer ${isLastVideo ? 'lg:col-span-1 xl:col-span-1 col-span-2 flex justify-center' : isSecondRow ? 'max-w-sm mx-auto lg:max-w-none xl:max-w-none' : ''}`}
+                  className={`group cursor-pointer min-w-0 ${isLastVideo ? "col-span-2 lg:col-span-1" : ""}`}
                 >
-                  <div className="relative overflow-hidden shadow-lg bg-white rounded-xl md:rounded-2xl hover:shadow-xl transition-all duration-300 h-full">
+                  <div
+                    className={`relative overflow-hidden shadow-lg bg-white rounded-xl md:rounded-2xl hover:shadow-xl transition-all duration-300 h-full ${
+                      isLastVideo ? "max-lg:max-w-[min(100%,17.5rem)] max-lg:mx-auto" : ""
+                    }`}
+                  >
                     {/* Video Container */}
                     <div className="relative aspect-[9/16] w-full">
                       <video
@@ -280,7 +282,7 @@ export default function HomePage({ startBooking }: HomePageProps) {
 
                       {/* Shimmer Effect */}
                       <motion.div
-                        className={`absolute inset-0 bg-gradient-to-r from-transparent via-white/15 to-transparent opacity-0 -skew-x-12 ${isLastVideo ? 'left-1/2 -translate-x-1/2 lg:left-auto lg:translate-x-0 xl:left-auto xl:translate-x-0' : ''}`}
+                        className="absolute inset-0 bg-gradient-to-r from-transparent via-white/15 to-transparent opacity-0 -skew-x-12"
                         whileHover={{
                           opacity: [0, 0.8, 0],
                           x: ["-100%", "100%"]
@@ -290,7 +292,7 @@ export default function HomePage({ startBooking }: HomePageProps) {
 
                       {/* Pulse Ring Animation */}
                       <motion.div
-                        className={`absolute inset-0 rounded-xl md:rounded-2xl border border-accent/20 ${isLastVideo ? 'left-1/2 -translate-x-1/2 lg:left-auto lg:translate-x-0 xl:left-auto xl:translate-x-0' : ''}`}
+                        className="absolute inset-0 rounded-xl md:rounded-2xl border border-accent/20"
                         animate={{
                           scale: [1, 1.03, 1],
                           opacity: [0, 0.2, 0],
