@@ -53,7 +53,7 @@ function clearLockState() {
 
 export default function LoginPage() {
   const navigate = useNavigate();
-  const { isAdmin, loading: authLoading } = useAuth();
+  const { session, isAdmin, loading: authLoading } = useAuth(); // ✅ tambah session
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -61,79 +61,90 @@ export default function LoginPage() {
   const [submitting, setSubmitting] = useState(false);
   const [now, setNow] = useState(() => Date.now());
 
+  // ✅ Redirect ke dashboard jika sudah login sebagai admin
   useEffect(() => {
     if (authLoading) return;
-    if (isAdmin) navigate("/dashboard", { replace: true });
-  }, [authLoading, isAdmin, navigate]);
+    if (session && isAdmin) {
+      navigate("/dashboard", { replace: true });
+    }
+  }, [authLoading, session, isAdmin, navigate]);
 
   useEffect(() => {
     const t = window.setInterval(() => setNow(Date.now()), 1000);
     return () => window.clearInterval(t);
   }, []);
 
+  // ✅ Tampilkan loading screen saat sesi sedang dicek
+  // Ini mencegah form login muncul sebentar sebelum redirect
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-surface flex items-center justify-center text-text font-sans">
+        Memuat sesi…
+      </div>
+    );
+  }
+
   const lockUntil = getLockUntil();
   const locked = now < lockUntil;
   const remainingSec = locked ? Math.ceil((lockUntil - now) / 1000) : 0;
 
-  const handleSubmit = useCallback(
-    async (e: React.FormEvent) => {
-      e.preventDefault();
-      setError("");
-      if (locked) {
-        setError(`Terlalu banyak percobaan. Coba lagi dalam ${remainingSec} d.`);
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("");
+    if (locked) {
+      setError(`Terlalu banyak percobaan. Coba lagi dalam ${remainingSec} d.`);
+      return;
+    }
+
+    setSubmitting(true);
+    try {
+      const supabase = getSupabase();
+      const { data, error: signErr } = await supabase.auth.signInWithPassword({
+        email: email.trim(),
+        password,
+      });
+      if (signErr || !data.user) {
+        const fails = getFails() + 1;
+        setFails(fails);
+        if (fails >= MAX_FAILS) {
+          setLockUntil(Date.now() + LOCKOUT_MS);
+          setFails(0);
+          setError(`Terkunci 5 menit setelah ${MAX_FAILS}x gagal.`);
+        } else {
+          setError(`Email atau password salah. (${fails}/${MAX_FAILS})`);
+        }
         return;
       }
 
-      setSubmitting(true);
-      try {
-        const supabase = getSupabase();
-        const { data, error: signErr } = await supabase.auth.signInWithPassword({
-          email: email.trim(),
-          password,
-        });
-        if (signErr || !data.user) {
-          const fails = getFails() + 1;
-          setFails(fails);
-          if (fails >= MAX_FAILS) {
-            setLockUntil(Date.now() + LOCKOUT_MS);
-            setFails(0);
-            setError(`Terkunci 5 menit setelah ${MAX_FAILS}x gagal.`);
-          } else {
-            setError(`Email atau password salah. (${fails}/${MAX_FAILS})`);
-          }
-          return;
+      const { data: profile, error: profErr } = await supabase
+        .from("profiles")
+        .select("role")
+        .eq("id", data.user.id)
+        .maybeSingle();
+
+      if (profErr || (profile as { role?: string } | null)?.role !== "admin") {
+        await supabase.auth.signOut();
+        const fails = getFails() + 1;
+        setFails(fails);
+        if (fails >= MAX_FAILS) {
+          setLockUntil(Date.now() + LOCKOUT_MS);
+          setFails(0);
+          setError("Akses ditolak. Akun bukan admin. Terkunci 5 menit.");
+        } else {
+          setError(`Akses ditolak — bukan admin. (${fails}/${MAX_FAILS})`);
         }
-
-        const { data: profile, error: profErr } = await supabase
-          .from("profiles")
-          .select("role")
-          .eq("id", data.user.id)
-          .maybeSingle();
-
-        if (profErr || (profile as { role?: string } | null)?.role !== "admin") {
-          await supabase.auth.signOut();
-          const fails = getFails() + 1;
-          setFails(fails);
-          if (fails >= MAX_FAILS) {
-            setLockUntil(Date.now() + LOCKOUT_MS);
-            setFails(0);
-            setError("Akses ditolak. Akun bukan admin. Terkunci 5 menit.");
-          } else {
-            setError(`Akses ditolak — bukan admin. (${fails}/${MAX_FAILS})`);
-          }
-          return;
-        }
-
-        clearLockState();
-        navigate("/dashboard", { replace: true });
-      } catch (err) {
-        setError(err instanceof Error ? err.message : "Gagal masuk");
-      } finally {
-        setSubmitting(false);
+        return;
       }
-    },
-    [email, password, locked, remainingSec, navigate]
-  );
+
+      clearLockState();
+      // ✅ Tidak perlu navigate manual — useEffect di atas akan handle
+      // setelah AuthContext update session & isAdmin
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Gagal masuk");
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
   const inputClass =
     "w-full bg-surface border border-surface-dark rounded-xl px-4 py-3 text-sm text-text focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent/30 transition-all";
