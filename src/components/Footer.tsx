@@ -1,4 +1,4 @@
-import { motion } from "motion/react";
+import { m } from "motion/react";
 import { MapPin, Phone, Mail, Camera, Globe, Send } from "lucide-react";
 import type { PageName } from "../App";
 
@@ -16,7 +16,7 @@ export default function Footer({ navigate }: FooterProps) {
       <div className="max-w-7xl mx-auto px-6">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
           {/* Brand */}
-          <motion.div
+          <m.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             className="space-y-6"
@@ -44,10 +44,10 @@ export default function Footer({ navigate }: FooterProps) {
                 </a>
               ))}
             </div>
-          </motion.div>
+          </m.div>
 
           {/* Quick Links */}
-          <motion.div
+          <m.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
@@ -79,10 +79,10 @@ export default function Footer({ navigate }: FooterProps) {
                 </button>
               </li>
             </ul>
-          </motion.div>
+          </m.div>
 
           {/* Services */}
-          <motion.div
+          <m.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
@@ -106,10 +106,10 @@ export default function Footer({ navigate }: FooterProps) {
                 </li>
               ))}
             </ul>
-          </motion.div>
+          </m.div>
 
           {/* Contact Info */}
-          <motion.div
+          <m.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
@@ -145,7 +145,7 @@ export default function Footer({ navigate }: FooterProps) {
                 className="w-full"
               />
             </div>
-          </motion.div>
+          </m.div>
         </div>
 
         {/* Bottom Bar */}

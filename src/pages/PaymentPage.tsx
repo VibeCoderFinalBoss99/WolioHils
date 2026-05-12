@@ -1,9 +1,19 @@
 import { useEffect, useRef, useState } from "react";
-import { motion } from "motion/react";
+import { m } from "motion/react";
 import { Lock, ChevronLeft, Loader2 } from "lucide-react";
 import type { PageName, BookingData } from "../App";
 import { calculateFees, calculateStaySubtotal } from "../lib/pricing";
 import { createSnapToken, loadMidtransSnap } from "../lib/midtrans";
+import {
+  markOrderCancelledByUser,
+  recordFailedOrCancelledOrder,
+  recordPendingOrder,
+} from "../lib/adminBookingStore";
+import {
+  PAY_ORDER_ID_KEY,
+  PAY_PENDING_RECORDED_KEY,
+  PAY_REOPEN_SNAP_KEY,
+} from "../lib/sessionKeys";
 import type { PaymentSuccessPayload } from "./PaymentSuccessPage";
 import type { PaymentFailurePayload } from "./PaymentFailurePage";
 
@@ -15,15 +25,23 @@ interface Props {
 const SUCCESS_KEY = "wolio_payment_success";
 const FAIL_KEY = "wolio_payment_failed";
 
-function clearSnapSessionLock() {
-  const session = sessionStorage.getItem("wolio_pay_session");
-  if (session) sessionStorage.removeItem(`wolio_snap_opened_${session}`);
+function snapLockKey(orderId: string): string {
+  return `wolio_snap_opened_${orderId}`;
+}
+
+function clearSnapLock(orderId: string) {
+  try {
+    sessionStorage.removeItem(snapLockKey(orderId));
+  } catch {
+    /* ignore */
+  }
 }
 
 export default function PaymentPage({ bookingData, navigate }: Props) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const orderIdRef = useRef(`WOLIO-${Date.now()}`);
+  const [snapAttempt, setSnapAttempt] = useState(0);
+  const orderIdRef = useRef<string | null>(null);
   const payStarted = useRef(false);
   const payFinished = useRef(false);
   const bookingRef = useRef(bookingData);
@@ -40,26 +58,50 @@ export default function PaymentPage({ bookingData, navigate }: Props) {
 
   useEffect(() => {
     const session = sessionStorage.getItem("wolio_pay_session");
-    const lockKey = session ? `wolio_snap_opened_${session}` : "";
 
-    const fail = (msg: string, orderId?: string) => {
+    const fail = async (msg: string, orderId?: string) => {
       if (payFinished.current) return;
       payFinished.current = true;
-      clearSnapSessionLock();
-      const pl: PaymentFailurePayload = { message: msg, order_id: orderId };
+      const oid = orderId || orderIdRef.current || "";
+      if (oid) clearSnapLock(oid);
+      const bd = bookingRef.current;
+      try {
+        await recordFailedOrCancelledOrder({
+          order_id: oid,
+          guestName: bd.guestName,
+          guestEmail: bd.guestEmail,
+          guestPhone: bd.guestPhone,
+          gross_amount: String(grossAmount),
+          checkIn: bd.checkIn,
+          checkOut: bd.checkOut,
+          propertyName: bd.propertyName || "Wolio Hills Malino",
+          property_id: bd.propertyId,
+          guests: bd.guests,
+          rooms: bd.rooms,
+          special_requests: bd.specialRequests,
+          transaction_status: "deny",
+          reason: msg,
+        });
+      } catch (e) {
+        console.error(e);
+      }
+      const pl: PaymentFailurePayload = { message: msg, order_id: oid };
       sessionStorage.setItem(FAIL_KEY, JSON.stringify(pl));
       navigateRef.current("payment-failed");
     };
 
-    const success = (result: Record<string, string>, bd: BookingData, gross: number) => {
-      if (payFinished.current) return;
-      payFinished.current = true;
-      clearSnapSessionLock();
+    const pushSuccessPayload = (
+      result: Record<string, string>,
+      bd: BookingData,
+      gross: number,
+      transaction_status: string,
+      oid: string
+    ) => {
       const pl: PaymentSuccessPayload = {
-        order_id: result.order_id || orderIdRef.current,
+        order_id: result.order_id || oid,
         transaction_id: result.transaction_id,
         payment_type: result.payment_type,
-        transaction_status: result.transaction_status,
+        transaction_status,
         gross_amount: String(gross),
         guestName: bd.guestName,
         guestEmail: bd.guestEmail,
@@ -67,9 +109,30 @@ export default function PaymentPage({ bookingData, navigate }: Props) {
         checkIn: bd.checkIn,
         checkOut: bd.checkOut,
         propertyName: bd.propertyName || "Wolio Hills Malino",
+        property_id: bd.propertyId,
+        guests: bd.guests,
+        rooms: bd.rooms,
+        special_requests: bd.specialRequests,
       };
       sessionStorage.setItem(SUCCESS_KEY, JSON.stringify(pl));
       navigateRef.current("payment-success");
+    };
+
+    const handleSnapResult = (result: Record<string, string>, bd: BookingData, gross: number, oid: string) => {
+      if (payFinished.current) return;
+      const ts = (result.transaction_status || "").toLowerCase();
+      payFinished.current = true;
+      clearSnapLock(oid);
+
+      if (ts === "settlement" || ts === "capture") {
+        pushSuccessPayload(result, bd, gross, result.transaction_status || "settlement", oid);
+        return;
+      }
+      if (ts === "pending") {
+        pushSuccessPayload(result, bd, gross, "pending", oid);
+        return;
+      }
+      void fail(result.status_message || "Pembayaran tidak berhasil", result.order_id || oid);
     };
 
     const run = async () => {
@@ -86,24 +149,78 @@ export default function PaymentPage({ bookingData, navigate }: Props) {
         setError("VITE_MIDTRANS_CLIENT_KEY belum diatur di .env");
         return;
       }
-      if (!session || !lockKey) {
+      if (!session) {
         setLoading(false);
         setError("Sesi pembayaran tidak valid. Gunakan tombol “Lanjut ke Pembayaran” dari halaman booking.");
         return;
       }
 
-      if (payStarted.current) return;
-      if (sessionStorage.getItem(lockKey)) return;
+      let orderId = sessionStorage.getItem(PAY_ORDER_ID_KEY);
+      if (!orderId) {
+        orderId = `WOLIO-${Date.now()}`;
+        sessionStorage.setItem(PAY_ORDER_ID_KEY, orderId);
+      }
+      orderIdRef.current = orderId;
+
+      const lockKey = snapLockKey(orderId);
+      payFinished.current = false;
+      payStarted.current = false;
+
+      const reopenOnly = sessionStorage.getItem(PAY_REOPEN_SNAP_KEY) === "1";
+      if (reopenOnly) {
+        sessionStorage.removeItem(PAY_REOPEN_SNAP_KEY);
+      }
+
+      // Kunci anti-double Snap; buka ulang dari pending boleh lepas kunci
+      if (sessionStorage.getItem(lockKey)) {
+        if (reopenOnly) {
+          sessionStorage.removeItem(lockKey);
+        } else {
+          setLoading(false);
+          setError("Popup pembayaran tidak bisa dibuka otomatis. Tekan “Coba lagi”.");
+          return;
+        }
+      }
+
+      const alreadyRecorded = sessionStorage.getItem(PAY_PENDING_RECORDED_KEY) === orderId;
+      const skipRecordPending = reopenOnly || alreadyRecorded;
 
       sessionStorage.setItem(lockKey, "1");
       payStarted.current = true;
       setLoading(true);
       setError(null);
 
+      if (!skipRecordPending) {
+        try {
+          await recordPendingOrder({
+            order_id: orderId,
+            gross_amount: String(gross),
+            guestName: bd.guestName,
+            guestEmail: bd.guestEmail,
+            guestPhone: bd.guestPhone,
+            checkIn: bd.checkIn,
+            checkOut: bd.checkOut,
+            propertyName: bd.propertyName || "Wolio Hills Malino",
+            property_id: bd.propertyId,
+            guests: bd.guests,
+            rooms: bd.rooms,
+            special_requests: bd.specialRequests,
+            transaction_status: "pending",
+          });
+          sessionStorage.setItem(PAY_PENDING_RECORDED_KEY, orderId);
+        } catch (e) {
+          payStarted.current = false;
+          sessionStorage.removeItem(lockKey);
+          setLoading(false);
+          setError(e instanceof Error ? e.message : "Gagal menyimpan booking (periksa .env Supabase / koneksi).");
+          return;
+        }
+      }
+
       try {
         await loadMidtransSnap(clientKey, isProduction);
         const token = await createSnapToken({
-          orderId: orderIdRef.current,
+          orderId,
           grossAmount: gross,
           booking: bd,
           itemName: `${bd.propertyName || "Wolio Hills Malino"} — ${bd.checkIn} s/d ${bd.checkOut}`,
@@ -117,20 +234,33 @@ export default function PaymentPage({ bookingData, navigate }: Props) {
 
         window.snap.pay(token, {
           onSuccess: (result) => {
-            success(result, bd, gross);
+            handleSnapResult(result, bd, gross, orderId);
           },
           onPending: (result) => {
-            success(result, bd, gross);
+            handleSnapResult(result, bd, gross, orderId);
           },
           onError: (result) => {
             const msg = result.status_message || "Pembayaran gagal";
-            fail(msg, result.order_id || orderIdRef.current);
+            void fail(msg, result.order_id || orderId);
           },
           onClose: () => {
             if (payFinished.current) return;
-            setError("Popup Midtrans ditutup sebelum pembayaran selesai. Tekan tombol di bawah untuk coba lagi.");
+            payFinished.current = true;
             sessionStorage.removeItem(lockKey);
             payStarted.current = false;
+            void (async () => {
+              try {
+                await markOrderCancelledByUser(orderId);
+              } catch (e) {
+                console.error(e);
+              }
+              const pl: PaymentFailurePayload = {
+                message: "Pembayaran dibatalkan atau popup ditutup sebelum selesai.",
+                order_id: orderId,
+              };
+              sessionStorage.setItem(FAIL_KEY, JSON.stringify(pl));
+              navigateRef.current("payment-failed");
+            })();
           },
         });
       } catch (e) {
@@ -144,12 +274,13 @@ export default function PaymentPage({ bookingData, navigate }: Props) {
     void run();
 
     return () => {
-      if (!payFinished.current && lockKey) {
-        sessionStorage.removeItem(lockKey);
+      const oid = orderIdRef.current;
+      if (!payFinished.current && oid) {
+        sessionStorage.removeItem(snapLockKey(oid));
       }
       payStarted.current = false;
     };
-  }, []);
+  }, [snapAttempt, clientKey, isProduction]);
 
   const nights =
     bookingData.checkIn && bookingData.checkOut
@@ -157,26 +288,34 @@ export default function PaymentPage({ bookingData, navigate }: Props) {
       : 0;
 
   const retry = () => {
-    clearSnapSessionLock();
+    const oid = orderIdRef.current || sessionStorage.getItem(PAY_ORDER_ID_KEY);
+    if (oid) clearSnapLock(oid);
+    try {
+      sessionStorage.removeItem(PAY_ORDER_ID_KEY);
+      sessionStorage.removeItem(PAY_PENDING_RECORDED_KEY);
+      sessionStorage.removeItem(PAY_REOPEN_SNAP_KEY);
+    } catch {
+      /* ignore */
+    }
+    orderIdRef.current = null;
     payStarted.current = false;
-    sessionStorage.setItem("wolio_pay_session", String(Date.now()));
-    orderIdRef.current = `WOLIO-${Date.now()}`;
+    payFinished.current = false;
     setError(null);
     setLoading(true);
-    window.location.reload();
+    setSnapAttempt((a) => a + 1);
   };
 
   return (
     <>
       <section className="relative pt-40 pb-24 px-6 hero-gradient overflow-hidden">
-        <motion.div animate={{ scale: [1, 1.2, 1] }} transition={{ duration: 12, repeat: Infinity }} className="absolute top-1/4 left-1/4 w-[500px] h-[500px] bg-accent/5 rounded-full blur-[120px]" />
+        <div aria-hidden className="pointer-events-none absolute top-1/4 left-1/4 h-[500px] w-[500px] rounded-full bg-accent/5 blur-[120px]" />
         <div className="max-w-4xl mx-auto text-center relative z-10">
-          <motion.span initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-accent font-semibold text-xs uppercase tracking-[0.3em]">
+          <m.span initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-accent font-semibold text-xs uppercase tracking-[0.3em]">
             Pembayaran Midtrans
-          </motion.span>
-          <motion.h1 initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="font-display font-black text-white text-5xl md:text-7xl leading-[0.9] mt-3 mb-6">
+          </m.span>
+          <m.h1 initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="font-display font-black text-white text-5xl md:text-7xl leading-[0.9] mt-3 mb-6">
             Selesaikan <span className="text-gradient">Pembayaran</span>
-          </motion.h1>
+          </m.h1>
           <p className="text-white/55 text-sm max-w-xl mx-auto">Popup Midtrans akan terbuka otomatis. Jika tidak muncul, periksa popup blocker atau tekan coba lagi.</p>
         </div>
         <div className="absolute bottom-0 left-0 w-full">
@@ -250,9 +389,9 @@ export default function PaymentPage({ bookingData, navigate }: Props) {
               </div>
             )}
             {error && (
-              <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} onClick={retry} className="bg-accent hover:bg-accent-light text-primary font-bold text-sm tracking-wider uppercase px-8 py-3.5 rounded-full shadow-lg cursor-pointer transition-colors">
+              <m.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} onClick={retry} className="bg-accent hover:bg-accent-light text-primary font-bold text-sm tracking-wider uppercase px-8 py-3.5 rounded-full shadow-lg cursor-pointer transition-colors">
                 Coba lagi
-              </motion.button>
+              </m.button>
             )}
             <div className="flex items-center gap-2 text-text-light text-xs">
               <Lock className="w-3.5 h-3.5" /> Pembayaran diproses oleh Midtrans (Snap)
@@ -261,9 +400,9 @@ export default function PaymentPage({ bookingData, navigate }: Props) {
         </div>
 
         <div className="mt-6">
-          <motion.button whileHover={{ scale: 1.05 }} onClick={() => navigate("book")} className="flex items-center gap-2 text-text-light hover:text-primary font-semibold text-sm cursor-pointer transition-colors">
+          <m.button whileHover={{ scale: 1.05 }} onClick={() => navigate("book")} className="flex items-center gap-2 text-text-light hover:text-primary font-semibold text-sm cursor-pointer transition-colors">
             <ChevronLeft className="w-4 h-4" /> Kembali ke Booking
-          </motion.button>
+          </m.button>
         </div>
       </section>
     </>

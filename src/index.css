@@ -22,10 +22,14 @@
 @layer base {
   html {
     scroll-behavior: smooth;
+    margin: 0;
+    padding: 0;
+    /* stable gutter can leave a perceived “strip” with some layouts; overflow-x is handled on body */
+    scrollbar-gutter: auto;
   }
 
   body {
-    @apply text-text font-sans antialiased min-h-screen overflow-x-hidden;
+    @apply text-text font-sans antialiased min-h-screen overflow-x-hidden m-0 p-0;
     background-color: var(--color-surface);
     position: relative;
   }

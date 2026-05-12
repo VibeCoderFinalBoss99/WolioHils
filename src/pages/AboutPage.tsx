@@ -1,16 +1,14 @@
 import React from "react";
-import { motion } from "motion/react";
+import { m } from "motion/react";
 import { Sparkles, Shield, Eye, Gem } from "lucide-react";
 import { use3DTilt } from "../hooks/use3DTilt";
 
 function ValueCard({ icon: Icon, title, desc, delay }: { icon: React.ElementType; title: string; desc: string; delay: number }) {
-  const { isHovering, rotateX, rotateY, glareBackground, handleMouseMove, handleMouseLeave, setIsHovering } = use3DTilt();
+  const { rotateX, rotateY, glareBackground, handleMouseMove, handleMouseLeave, setIsHovering } = use3DTilt();
   return (
-    <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} transition={{ delay }} viewport={{ once: true }} style={{ perspective: 1000 }}>
-      <motion.div
-        animate={!isHovering ? { rotateX: [0.5, -0.5, 0.5], rotateY: [1, -1, 1] } : {}}
-        transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
-        style={{ rotateX: isHovering ? rotateX : undefined, rotateY: isHovering ? rotateY : undefined, transformStyle: "preserve-3d" }}
+    <m.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} transition={{ delay }} viewport={{ once: true }} style={{ perspective: 1000 }}>
+      <m.div
+        style={{ rotateX, rotateY, transformStyle: "preserve-3d" }}
         onMouseEnter={() => setIsHovering(true)} onMouseMove={handleMouseMove} onMouseLeave={handleMouseLeave}
         className="bg-white p-8 rounded-3xl shadow-deep gold-border text-center group relative overflow-hidden h-full cursor-default"
       >
@@ -19,46 +17,60 @@ function ValueCard({ icon: Icon, title, desc, delay }: { icon: React.ElementType
         </div>
         <h4 style={{ transform: "translateZ(20px)" }} className="font-display font-bold text-primary text-lg mb-3">{title}</h4>
         <p style={{ transform: "translateZ(10px)" }} className="text-text-light text-sm leading-relaxed">{desc}</p>
-        <motion.div style={{ background: glareBackground, zIndex: 0, pointerEvents: "none" }} className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-3xl" />
-      </motion.div>
-    </motion.div>
+        <m.div style={{ background: glareBackground, zIndex: 0, pointerEvents: "none" }} className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-3xl" />
+      </m.div>
+    </m.div>
   );
 }
 
 export default function AboutPage() {
   return (
-    <>
+    <div className="min-w-0 overflow-x-clip">
       {/* HERO */}
       <section className="relative pt-40 pb-24 px-6 hero-gradient overflow-hidden">
-        <motion.div animate={{ scale: [1, 1.2, 1] }} transition={{ duration: 12, repeat: Infinity }} className="absolute top-1/4 right-1/4 w-[500px] h-[500px] bg-accent/5 rounded-full blur-[120px]" />
+        <div aria-hidden className="pointer-events-none absolute top-1/4 right-1/4 h-[500px] w-[500px] rounded-full bg-accent/5 blur-[120px]" />
         <div className="max-w-4xl mx-auto text-center relative z-10">
-          <motion.span initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="inline-block text-accent font-semibold text-xs uppercase tracking-[0.3em] mb-4">Cerita Kami</motion.span>
-          <motion.h1 initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="font-display font-black text-white text-5xl md:text-7xl leading-[0.9] mb-6">
+          <m.span initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="text-accent font-semibold text-xs uppercase tracking-[0.3em]">
+            Cerita Kami
+          </m.span>
+          <m.h1
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className="font-display font-black text-white text-3xl leading-[1.08] sm:text-4xl sm:leading-[1.02] md:text-5xl md:leading-[0.98] lg:text-6xl xl:text-7xl lg:leading-[0.92] mt-3 mb-6 text-balance"
+          >
             Mendefinisikan Ulang <span className="text-gradient">Perjalanan</span> Mewah
-          </motion.h1>
-          <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="text-white/60 text-lg max-w-2xl mx-auto leading-relaxed">
+          </m.h1>
+          <m.p
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4 }}
+            className="text-white/60 text-base sm:text-lg max-w-2xl mx-auto leading-relaxed text-pretty"
+          >
             Wolio Hills hadir untuk mereka yang percaya bahwa perjalanan bukan sekadar berpindah tempat
             melainkan sebuah pengalaman yang layak dikenang. Nyaman, berkesan, dan selalu terasa istimewa.
-          </motion.p>
+          </m.p>
         </div>
         <div className="absolute bottom-0 left-0 w-full"><svg viewBox="0 0 1440 120" fill="none" className="w-full"><path d="M0,80 C360,120 1080,40 1440,80 L1440,120 L0,120 Z" fill="var(--color-surface)" /></svg></div>
       </section>
 
       {/* STORY */}
       <section className="py-20 px-6 max-w-6xl mx-auto">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-          <motion.div initial={{ opacity: 0, x: -30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }}>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 sm:gap-16 items-center">
+          <m.div initial={{ opacity: 0, x: -30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }}>
             <div className="relative">
               <div className="rounded-3xl overflow-hidden shadow-deep">
-                <img src="./images/picture-3.png" alt="Luxury hotel lobby" className="w-full h-[400px] object-cover" loading="lazy" />
+                <img src="./images/picture-3.png" alt="Luxury hotel lobby" className="w-full h-[280px] sm:h-[400px] object-cover" loading="lazy" />
               </div>
-              <motion.div animate={{ y: [0, -10, 0], rotate: [-2, 2, -2] }} transition={{ duration: 5, repeat: Infinity }} className="absolute -bottom-8 -right-8 bg-accent text-primary p-6 rounded-2xl shadow-xl">
+              <div
+                className="absolute z-10 -bottom-8 -right-8 bg-accent text-primary p-6 rounded-2xl shadow-xl"
+              >
                 <span className="font-display font-bold text-3xl block">100%</span>
                 <span className="text-xs font-semibold uppercase tracking-widest">Self Healing</span>
-              </motion.div>
+              </div>
             </div>
-          </motion.div>
-          <motion.div initial={{ opacity: 0, x: 30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }}>
+          </m.div>
+          <m.div initial={{ opacity: 0, x: 30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }}>
             <span className="text-accent font-semibold text-xs uppercase tracking-[0.3em]">Tentang Wolio Hills</span>
             <h2 className="font-display font-black text-primary text-4xl mt-3 mb-6">Di Mana Hasrat Bertemu <span className="text-gradient">Kesempurnaan</span></h2>
             <div className="space-y-4 text-text-light leading-relaxed">
@@ -73,17 +85,17 @@ export default function AboutPage() {
                 dari kesibukan sehari-hari. Kami mengundang Anda untuk datang, beristirahat,
                 dan membawa pulang kenangan yang tak terlupakan.</p>
             </div>
-          </motion.div>
+          </m.div>
         </div>
       </section>
 
 
       {/* VALUES */}
       <section className="py-20 px-6 max-w-7xl mx-auto">
-        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center mb-16">
+        <m.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center mb-16">
           <span className="text-accent font-semibold text-xs uppercase tracking-[0.3em]">Prinsip Kami</span>
           <h2 className="font-display font-black text-primary text-4xl md:text-5xl mt-3">Yang <span className="text-gradient">Kami Utamakan</span></h2>
-        </motion.div>
+        </m.div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           <ValueCard icon={Sparkles} title="Kenyamanan Anda" desc="Kami menjaga privasi dan keamanan Anda sepenuh hati, karena kami percaya setiap tamu berhak dapat menikmati liburan tanpa khawatir." delay={0} />
           <ValueCard icon={Shield} title="Kenyamanan Bersama" desc="Setiap villa kami jaga kebersihannya dengan standar tinggi, karena kenyamanan bersama adalah fondasi dari pengalaman menginap yang menyenangkan." delay={0.1} />
@@ -91,6 +103,6 @@ export default function AboutPage() {
           <ValueCard icon={Gem} title="Pengalaman Terbaik" desc="Kami berkomitmen memberikan lebih dari yang Anda harapkan, karena setiap momen liburan Anda adalah berharga dan harus istimewa." delay={0.3} />
         </div>
       </section>
-    </>
+    </div>
   );
 }

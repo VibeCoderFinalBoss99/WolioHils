@@ -1,4 +1,4 @@
-import { motion } from "motion/react";
+import { m } from "motion/react";
 import { MessageCircle, ArrowUp } from "lucide-react";
 
 export default function FloatingButtons() {
@@ -6,7 +6,7 @@ export default function FloatingButtons() {
 
   return (
     <div className="fixed bottom-8 right-8 z-[150] flex flex-col gap-3">
-      <motion.button
+      <m.button
         onClick={scrollToTop}
         initial={{ scale: 0, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
@@ -17,9 +17,9 @@ export default function FloatingButtons() {
         aria-label="Scroll to top"
       >
         <ArrowUp className="w-5 h-5 group-hover:-translate-y-0.5 transition-transform" />
-      </motion.button>
+      </m.button>
 
-      <motion.a
+      <m.a
         href="https://wa.me/6281234567890"
         target="_blank"
         rel="noopener noreferrer"
@@ -35,7 +35,7 @@ export default function FloatingButtons() {
         <span className="max-w-0 overflow-hidden group-hover:max-w-xs group-hover:ml-3 transition-all duration-500 font-semibold text-xs uppercase tracking-widest whitespace-nowrap">
           Chat Us
         </span>
-      </motion.a>
+      </m.a>
     </div>
   );
 }
