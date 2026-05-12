@@ -1,28 +1,15 @@
 {
-  "name": "luxestay",
+  "name": "wolio-monorepo",
   "private": true,
-  "version": "0.0.0",
-  "type": "module",
+  "workspaces": ["packages/*"],
   "scripts": {
-    "dev": "vite",
-    "build": "tsc && vite build",
-    "preview": "vite preview"
-  },
-  "devDependencies": {
-    "@types/react": "^19.2.14",
-    "@types/react-dom": "^19.2.3",
-    "@vercel/node": "^5.7.17",
-    "typescript": "~6.0.2",
-    "vite": "^8.0.12"
-  },
-  "dependencies": {
-    "@supabase/supabase-js": "^2.105.4",
-    "@tailwindcss/vite": "^4.3.0",
-    "@vitejs/plugin-react": "^6.0.1",
-    "lucide-react": "^1.14.0",
-    "motion": "^12.38.0",
-    "react": "^19.2.6",
-    "react-dom": "^19.2.6",
-    "tailwindcss": "^4.3.0"
+    "dev": "npm run dev -w wolio-public",
+    "dev:public": "npm run dev -w wolio-public",
+    "dev:admin": "npm run dev -w wolio-admin",
+    "build:public": "npm run build -w wolio-public",
+    "build:admin": "npm run build -w wolio-admin",
+    "build": "npm run build:public && npm run build:admin",
+    "preview": "npm run preview -w wolio-public",
+    "preview:admin": "npm run preview -w wolio-admin"
   }
 }
