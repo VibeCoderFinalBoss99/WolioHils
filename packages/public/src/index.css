@@ -152,4 +152,101 @@
   .shadow-deep {
     box-shadow: 0 30px 80px rgba(10, 25, 41, 0.25);
   }
+
+  /* About page: hero wave layers (GPU-friendly translate only) */
+  @keyframes about-wave-slide {
+    0% {
+      transform: translate3d(0, 0, 0);
+    }
+    100% {
+      transform: translate3d(-50%, 0, 0);
+    }
+  }
+
+  .about-hero-wave-track {
+    width: 200%;
+    animation: about-wave-slide 22s linear infinite;
+    will-change: transform;
+  }
+
+  .about-hero-wave-track-slow {
+    width: 200%;
+    animation: about-wave-slide 36s linear infinite reverse;
+    will-change: transform;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .about-hero-wave-track,
+    .about-hero-wave-track-slow {
+      animation: none;
+      transform: none;
+    }
+  }
+
+  /* About page: philosophy cards — glow + light sweep, no scale zoom */
+  .philosophy-card-shell {
+    position: relative;
+    transition:
+      box-shadow 0.45s ease,
+      border-color 0.45s ease,
+      background-color 0.45s ease;
+  }
+
+  .philosophy-card-shell:hover {
+    box-shadow:
+      0 22px 55px rgba(45, 55, 72, 0.14),
+      0 0 0 1px rgba(212, 165, 116, 0.38);
+    background-color: rgba(255, 255, 255, 0.99);
+  }
+
+  .philosophy-shine-track {
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    overflow: hidden;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.4s ease;
+  }
+
+  .philosophy-card-shell:hover .philosophy-shine-track {
+    opacity: 1;
+  }
+
+  .philosophy-shine-bar {
+    position: absolute;
+    top: -40%;
+    bottom: -40%;
+    left: -60%;
+    width: 55%;
+    transform: skewX(-14deg);
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(212, 165, 116, 0.22),
+      transparent
+    );
+    filter: blur(0.5px);
+  }
+
+  .philosophy-card-shell:hover .philosophy-shine-bar {
+    animation: philosophy-sweep 2s ease-in-out infinite;
+  }
+
+  @keyframes philosophy-sweep {
+    0% {
+      transform: skewX(-14deg) translate3d(0, 0, 0);
+    }
+    100% {
+      transform: skewX(-14deg) translate3d(320%, 0, 0);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .philosophy-card-shell:hover .philosophy-shine-bar {
+      animation: none;
+      transform: skewX(-14deg) translate3d(40%, 0, 0);
+      opacity: 0.5;
+    }
+  }
 }

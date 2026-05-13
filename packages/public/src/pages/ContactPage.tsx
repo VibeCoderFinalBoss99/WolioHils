@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { m } from "motion/react";
 import { MapPin, Phone, Mail, Clock, Send, Check } from "lucide-react";
+import emailjs from "@emailjs/browser";
 import { use3DTilt } from "../hooks/use3DTilt";
 import type { PageName } from "../App";
 
@@ -30,11 +31,33 @@ export default function ContactPage({}: Props) {
   const [formData, setFormData] = useState({ name: "", email: "", subject: "", message: "" });
   const [sent, setSent] = useState(false);
   const [sending, setSending] = useState(false);
+  const [error, setError] = useState("");
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setSending(true);
-    setTimeout(() => { setSending(false); setSent(true); }, 1500);
+    setError("");
+
+    emailjs
+      .send(
+        import.meta.env.VITE_EMAILJS_SERVICE_ID,
+        import.meta.env.VITE_EMAILJS_TEMPLATE_ID,
+        {
+          name: formData.name,
+          email: formData.email,
+          subject: formData.subject,
+          message: formData.message,
+        },
+        import.meta.env.VITE_EMAILJS_PUBLIC_KEY
+      )
+      .then(() => {
+        setSending(false);
+        setSent(true);
+      })
+      .catch(() => {
+        setSending(false);
+        setError("Gagal mengirim pesan. Silakan coba lagi atau hubungi kami langsung via WhatsApp.");
+      });
   };
 
   const inputClass = "w-full bg-surface border border-surface-dark rounded-xl px-4 py-3 text-sm text-text focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent/30 transition-all";
@@ -73,7 +96,12 @@ export default function ContactPage({}: Props) {
                 </div>
                 <h3 className="font-display font-bold text-primary text-2xl mb-3">Pesan Terkirim!</h3>
                 <p className="text-text-light text-sm mb-6">Makasih udah hubungi kami. Kami akan balas dalam 24 jam.</p>
-                <m.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} onClick={() => { setSent(false); setFormData({ name: "", email: "", subject: "", message: "" }); }} className="text-accent hover:text-accent-dark font-semibold text-sm cursor-pointer">
+                <m.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => { setSent(false); setFormData({ name: "", email: "", subject: "", message: "" }); }}
+                  className="text-accent hover:text-accent-dark font-semibold text-sm cursor-pointer"
+                >
                   Kirim Pesan Lagi
                 </m.button>
               </m.div>
@@ -97,7 +125,19 @@ export default function ContactPage({}: Props) {
                     <label className="text-xs font-semibold uppercase tracking-widest text-text-light mb-2 block">Pesan</label>
                     <textarea required value={formData.message} onChange={e => setFormData(p => ({ ...p, message: e.target.value }))} rows={5} placeholder="Ceritain lebih detail..." className={inputClass} />
                   </div>
-                  <m.button type="submit" whileHover={{ scale: sending ? 1 : 1.02 }} whileTap={{ scale: sending ? 1 : 0.98 }} disabled={sending} className={`w-full font-bold text-sm tracking-wider uppercase py-4 rounded-full shadow-lg flex items-center justify-center gap-2 cursor-pointer transition-all ${sending ? "bg-text-light text-white" : "bg-accent hover:bg-accent-light text-primary"}`}>
+
+                  {/* Error message */}
+                  {error && (
+                    <p className="text-red-500 text-xs text-center">{error}</p>
+                  )}
+
+                  <m.button
+                    type="submit"
+                    whileHover={{ scale: sending ? 1 : 1.02 }}
+                    whileTap={{ scale: sending ? 1 : 0.98 }}
+                    disabled={sending}
+                    className={`w-full font-bold text-sm tracking-wider uppercase py-4 rounded-full shadow-lg flex items-center justify-center gap-2 cursor-pointer transition-all ${sending ? "bg-text-light text-white" : "bg-accent hover:bg-accent-light text-primary"}`}
+                  >
                     {sending ? (
                       <><div className="h-5 w-5 animate-spin rounded-full border-2 border-white/30 border-t-white" /> Mengirim...</>
                     ) : (

@@ -1,7 +1,9 @@
 {
   "name": "wolio-monorepo",
   "private": true,
-  "workspaces": ["packages/*"],
+  "workspaces": [
+    "packages/*"
+  ],
   "scripts": {
     "dev": "npm run dev -w wolio-public",
     "dev:public": "npm run dev -w wolio-public",
