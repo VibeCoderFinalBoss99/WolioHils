@@ -107,14 +107,13 @@ async function upsertRemote(rec: StoredBooking): Promise<void> {
   notifyClients();
 }
 
-/** Untuk kalender: hanya tanggal (RPC, tanpa PII). */
 export async function fetchPublicBookedDatesSet(): Promise<Set<string>> {
   try {
     const supabase = getSupabase();
     const { data, error } = await supabase.rpc("get_public_booked_dates");
     if (error) throw new Error(error.message);
-    const rows = (data as string[] | null) ?? [];
-    return new Set(rows.map((d) => String(d).slice(0, 10)));
+    const rows = (data as { stay_date: string }[] | null) ?? [];
+    return new Set(rows.map((r) => String(r.stay_date).slice(0, 10)));
   } catch {
     return new Set();
   }
