@@ -64,7 +64,7 @@ function InViewLoopVideo({ src, className, poster }: { src: string; className?: 
   );
 }
 
-export default function HomePage({ startBooking }: HomePageProps) {
+export default function HomePage({ navigate, startBooking }: HomePageProps) {
   // Video data from folder
   const videos: VideoData[] = [
     { id: 1, src: '/videos/Kamar 2.mp4', title: 'Ruangan Nyaman', desc: 'Kamar tidur elegan dengan desain modern dan fasilitas premium untuk kenyamanan maksimal selama menginap.' },
@@ -382,11 +382,11 @@ export default function HomePage({ startBooking }: HomePageProps) {
               <m.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                onClick={() => startBooking(1, "Wolio Hills Malino", 2000000, "https://images.unsplash.com/photo-1582268611958-ebfd161ef9cf?w=800&q=80")}
+                onClick={() => navigate("about")}
                 className="w-full bg-accent hover:bg-accent-light text-primary font-bold text-sm tracking-wider uppercase px-8 py-4 rounded-full shadow-lg cursor-pointer transition-colors"
                 style={{ boxShadow: '0 20px 40px rgba(201,168,76,0.3)' }}
               >
-                Booking Sekarang
+                Info Lebih Lanjut
               </m.button>
             </m.div>
           </div>

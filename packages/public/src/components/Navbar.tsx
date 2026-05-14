@@ -99,7 +99,7 @@ export default function Navbar({ currentPage, navigate }: NavbarProps) {
             <img 
               src="/images/logo.png" 
               alt="Wolio Hills Logo" 
-              className="w-10 h-10 shrink-0 object-contain group-hover:scale-110 transition-transform duration-300"
+              className="w-10 h-10 shrink-0 object-contain rounded-full group-hover:scale-110 transition-transform duration-300"
             />
             <div className="hidden sm:flex flex-col">
               <span className="font-display font-bold text-white text-lg leading-none tracking-wide">Wolio Hills</span>
@@ -166,7 +166,7 @@ export default function Navbar({ currentPage, navigate }: NavbarProps) {
                 <img 
                   src="/images/logo.png" 
                   alt="Wolio Hills Logo" 
-                  className="w-full h-full object-contain"
+                  className="w-full h-full object-contain rounded-full"
                 />
               </m.div>
 

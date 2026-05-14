@@ -93,10 +93,6 @@ export default function Footer({ navigate }: FooterProps) {
             <ul className="space-y-3 text-white/50 text-sm">
               {[
                 { name: "Instagram", link: "#" },
-                { name: "Facebook", link: "#" },
-                { name: "Twitter", link: "#" },
-                { name: "YouTube", link: "#" },
-                { name: "LinkedIn", link: "#" },
                 { name: "TikTok", link: "#" }
               ].map((social) => (
                 <li key={social.name} className="hover:text-accent transition-colors cursor-default">
